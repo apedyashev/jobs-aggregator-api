@@ -1,0 +1,27 @@
+{
+  "name": "scrapper-microservice",
+  "private": true,
+  "description": "",
+  "author": "",
+  "license": "UNLICENSE",
+  "main": "./app.js",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "engines": {
+    "node": ">=0.10.8"
+  },
+  "scripts": {
+    "start": "nodemon -L scrapper/app.js"
+  },
+  "dependencies": {
+    "async": "^2.1.4",
+    "lodash": "^4.17.2",
+    "moment": "^2.17.1",
+    "mongoose": "^4.7.1",
+    "request": "^2.79.0",
+    "sprintf": "^0.1.5"
+  },
+  "devDependencies": {}
+}

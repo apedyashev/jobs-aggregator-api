@@ -1,0 +1,30 @@
+app:
+  build: ./apps/api
+  volumes:
+    - ./apps/api:/src
+  ports:
+   - "3000:3000"
+  command: [node, .]
+scrapper:
+  build: ./apps/scrapper
+  ports:
+    - "8888:8888"
+  links:
+    - mongodb
+  volumes:
+    - ./apps/scrapper:/src/scrapper
+    - ./apps/shared:/src/shared
+  command: [npm, run, start]
+mongoexpress:
+  image: mongo-express:0.34
+  links:
+    - mongodb
+  environment:
+    ME_CONFIG_MONGODB_SERVER: mongodb
+    ME_CONFIG_MONGODB_PORT: 27017
+  ports:
+    - "8081:8081"
+mongodb:
+  image: mongo:3
+  ports:
+    - "27017:27017"
