@@ -1,4 +1,4 @@
-# Ubuntu-based, larger container:
+# Ubuntu-based, larger container: test
 # FROM irakli/nodejs:latest
 
 # Alpine Linux-based, tiny Node container:
