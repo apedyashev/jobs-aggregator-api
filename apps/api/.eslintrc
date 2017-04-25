@@ -1,3 +1,28 @@
 {
-  "extends": "loopback"
+  "extends": ["eslint:recommended", "google"],
+  "ecmaFeatures": {
+    "modules": true
+  },
+  "env": {
+    "es6": true,
+    "node": true,
+    "mocha": true
+  },
+  "globals": {
+    "sails": true,
+    "jwToken": true
+  },
+  "rules": {
+    "max-len": "off",
+    "no-console": "warn",
+    "object-shorthand": "error",
+    "valid-jsdoc": "off",
+    "spaced-comment": [
+      "error",
+      "always",
+      {
+        "exceptions": ["-", "*"]
+      }
+    ]
+  }
 }

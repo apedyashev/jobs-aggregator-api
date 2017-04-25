@@ -3,8 +3,8 @@ app:
   volumes:
     - ./apps/api:/src
   ports:
-   - "3000:3000"
-  command: [node, .]
+   - "1337:1337"
+  command: [nodemon, app.js]
 scrapper:
   build: ./apps/scrapper
   ports:
