@@ -36,6 +36,11 @@ module.exports.policies = {
     '*': true, // We dont need authorization here, allowing public access
   },
 
+  // TODO: do not allow acess in production
+  'SwaggerController': {
+    '*': true,
+  }
+
   /***************************************************************************
   *                                                                          *
   * Here's an example of mapping some policies to run before a controller    *

@@ -59,5 +59,15 @@ try {
 }
 
 
+
 // Start server
-sails.lift(rc('sails'));
+sails.lift(rc('sails'), () => {
+  if (sails.config.environment !== 'production') {
+    const fs = require('fs-extra');
+    fs.copy('node_modules/swagger-ui/dist/', '.tmp/public/docs', (err) => {
+      if (err) {
+        return sails.log.error(err);
+      }
+    });
+  }
+});

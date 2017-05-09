@@ -8,6 +8,18 @@
  // We don't want to store password with out encryption
  const bcrypt = require('bcrypt');
 
+ /**
+  * @swagger
+  * definitions:
+  *   SerializedUser:
+  *     allOf:
+  *       - $ref: '#/definitions/BaseModel'
+  *       - required:
+  *         - email
+  *       - properties:
+  *          email:
+  *            type: string
+  */
  module.exports = {
    schema: true,
 

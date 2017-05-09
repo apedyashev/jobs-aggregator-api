@@ -46,4 +46,26 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
   'POST /auth': 'AuthController.index',
+
+  'GET /swagger/docs/api.json': (req, res) => {
+    if (sails.config.environment !== 'production') {
+      const swaggerJSDoc = require('swagger-jsdoc');
+
+      const options = {
+        swaggerDefinition: {
+          info: {
+            title: 'Hello World', // Title (required)
+            version: '1.0.0', // Version (required)
+          },
+        },
+        apis: ['./api/**/*.js', './api/**/*.jsdoc'], // Path to the API docs
+      };
+
+      // Initialize swagger-jsdoc -> returns validated swagger spec in json format
+      const swaggerSpec = swaggerJSDoc(options);
+      res.json(200, swaggerSpec);
+    } else {
+      res.notFound();
+    }
+  }
 };

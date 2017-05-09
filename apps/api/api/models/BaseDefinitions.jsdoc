@@ -1,0 +1,15 @@
+/**
+* @swagger
+* definitions:
+*   BaseModel:
+*     type: object
+*     properties:
+*       id:
+*         type: string
+*       createdAt:
+*         type: string
+*         format: "date-time"
+*       updatedAt:
+*         type: string
+*         format: "date-time"
+*/
