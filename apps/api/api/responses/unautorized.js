@@ -32,7 +32,7 @@ module.exports = function unautorized(message, options) {
   if (req.wantsJSON || sails.config.hooks.views === false) {
     return res.jsonx({
       message,
-      debugData: options
+      debugData: options,
     });
   }
 };

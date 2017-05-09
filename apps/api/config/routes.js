@@ -67,5 +67,6 @@ module.exports.routes = {
     } else {
       res.notFound();
     }
-  }
+  },
+
 };

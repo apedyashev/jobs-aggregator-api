@@ -37,9 +37,9 @@ module.exports.policies = {
   },
 
   // TODO: do not allow acess in production
-  'SwaggerController': {
-    '*': true,
-  }
+  // 'SwaggerController': {
+  //   '*': true,
+  // },
 
   /***************************************************************************
   *                                                                          *

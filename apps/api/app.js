@@ -59,7 +59,6 @@ try {
 }
 
 
-
 // Start server
 sails.lift(rc('sails'), () => {
   if (sails.config.environment !== 'production') {
