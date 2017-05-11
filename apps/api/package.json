@@ -8,7 +8,7 @@
     "debug": "node debug app.js",
     "start": "node app.js",
     "lint": "eslint ./",
-    "precommit": "npm run test",
+    "precommit": "docker-compose run app npm run test",
     "test": "PORT=9999 NODE_ENV=test node ./node_modules/mocha/bin/mocha test/bootstrap.test.js test/integration/**/*.test.js"
   },
   "dependencies": {
@@ -19,6 +19,9 @@
     "rc": "1.0.1",
     "sails": "~0.12.13",
     "sails-disk": "~0.10.9",
+    "sails-hook-pagify": "0.2.0",
+    "sails-hook-validation": "0.4.6",
+    "sails-mongo": "0.12.2",
     "sails-seed": "~0.5.0"
   },
   "main": "app.js",
@@ -29,8 +32,10 @@
   "author": "alex",
   "license": "",
   "devDependencies": {
+    "chai": "3.5.0",
     "eslint": "3.19.0",
     "eslint-config-google": "0.7.1",
+    "grunt": "1.0.1",
     "husky": "0.13.3",
     "mocha": "3.3.0",
     "sails-memory": "0.10.7",

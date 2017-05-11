@@ -22,11 +22,7 @@ module.exports = function serverError(data, options) {
   res.status(500);
 
   // Log error to console
-  if (data !== undefined) {
-    sails.log.error('Sending 500 ("Server Error") response: \n', data);
-  } else {
-    sails.log.error('Sending empty 500 ("Server Error") response');
-  }
+  sails.log.error('Sending 500 ("Server Error") response: \n', data, '\n', options);
 
   // Only include errors in response if application environment
   // is not set to 'production'.  In production, we shouldn't

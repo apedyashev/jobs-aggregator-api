@@ -10,13 +10,16 @@
   },
   "globals": {
     "sails": true,
-    "jwToken": true
+    "jwToken": true,
+    "_": true,
+    "Jobs": true
   },
   "rules": {
     "max-len": "off",
     "no-console": "warn",
     "object-shorthand": "error",
     "valid-jsdoc": "off",
+    "require-jsdoc": "off",
     "spaced-comment": [
       "error",
       "always",

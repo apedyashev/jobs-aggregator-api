@@ -1,6 +1,7 @@
-FROM node:7.7.4
+FROM node:7.10.0
 
 RUN mkdir /src
+ADD ./ /src
 WORKDIR /src
 #ADD ./package.json /src/package.json
 RUN npm install

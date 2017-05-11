@@ -33,12 +33,12 @@
    *       - application/json
    *     parameters:
    *       - $ref: "#/parameters/AuthorizationHeader"
-   *       - name: body
-   *         description: User's email.
+   *       - name: payload
+   *         description: Endpoint's payload.
    *         in: body
    *         required: true
    *         schema:
-   *           $ref: "#/definitions/AuthorizationRequestBody"
+   *           $ref: "#/definitions/AuthorizationRequestPayload"
    *     responses:
    *       200:
    *         description: OK
@@ -47,7 +47,7 @@
    *           $ref: '#/definitions/AuthorizationResponseOk'
    *
    * definitions:
-   *   AuthorizationRequestBody:
+   *   AuthorizationRequestPayload:
    *     type: object
    *     required:
    *      - email
@@ -92,7 +92,7 @@
          } else {
            res.json({
              user,
-             token: jwToken.issue({id: user.id}),
+             token: jwToken.issue({userId: user.id}),
            });
          }
        });

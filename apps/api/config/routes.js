@@ -47,6 +47,9 @@ module.exports.routes = {
   ***************************************************************************/
   'POST /auth': 'AuthController.index',
 
+  'GET /jobs': 'JobsController.index',
+  'GET /subscriptions/:subscriptionId/jobs': 'JobsController.getBySubscription',
+
   'GET /swagger/docs/api.json': (req, res) => {
     if (sails.config.environment !== 'production') {
       const swaggerJSDoc = require('swagger-jsdoc');

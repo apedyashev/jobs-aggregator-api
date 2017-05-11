@@ -2,8 +2,9 @@ module.exports = {
   seeds: {
     users: [
       {
-        'email': 'test.user@example.com',
-        'password': '123456',
+        email: 'test.user@example.com',
+        password: '123456',
+        confirmPassword: '123456',
       },
     ],
   },

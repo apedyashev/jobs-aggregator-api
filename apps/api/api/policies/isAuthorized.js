@@ -28,9 +28,9 @@ module.exports = function(req, res, next) {
     return res.json(401, {err: 'No Authorization header was found'});
   }
 
-  jwToken.verify(token, (err, token) => {
+  jwToken.verify(token, (err, tokenPayload) => {
     if (err) return res.json(401, {err: 'Invalid Token!'});
-    req.token = token; // This is the decrypted token or the payload you provided
+    req.tokenPayload = tokenPayload; // This is the decrypted token or the payload you provided
     next();
   });
 };

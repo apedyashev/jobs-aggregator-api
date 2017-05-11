@@ -4,6 +4,8 @@ app:
     - ./apps/api:/src
   ports:
    - "1337:1337"
+  links:
+   - mongodb
   command: [nodemon, app.js]
 scrapper:
   build: ./apps/scrapper
@@ -23,7 +25,7 @@ mongoexpress:
     ME_CONFIG_MONGODB_SERVER: mongodb
     ME_CONFIG_MONGODB_PORT: 27017
   ports:
-    - "8081:8081"
+    - "8082:8081"
 mongodb:
   image: mongo:3
   ports:

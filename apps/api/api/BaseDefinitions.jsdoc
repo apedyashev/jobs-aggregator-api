@@ -1,0 +1,53 @@
+/**
+* @swagger
+* definitions:
+*   BaseModel:
+*     type: object
+*     properties:
+*       id:
+*         type: string
+*       createdAt:
+*         type: string
+*         format: "date-time"
+*       updatedAt:
+*         type: string
+*         format: "date-time"
+*   ValidationError:
+*     type: object
+*     properties:
+*       message:
+*         type: string
+*       fieldName:
+*         type: array
+*         items:
+*           $ref: "#/definitions/ValidationErrorItem"
+*   ValidationErrorItem:
+*     properties:
+*       rule:
+*         type: string
+*       message:
+*         type: string
+*
+* parameters:
+*   page:
+*     name: page
+*     in: query
+*     description: Current page.
+*     required: false
+*     type: integer
+*     default: 1
+*   perPage:
+*     name: perPage
+*     in: query
+*     description: Default items per page.
+*     required: false
+*     type: integer
+*     default: 50
+*   sortBy:
+*     name: sortBy
+*     in: query
+*     description: Sort field and order
+*     required: false
+*     type: string
+*     default: createdAt:ASC
+*/

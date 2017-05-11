@@ -10,8 +10,9 @@
 module.exports.seeds = {
   users: [
     {
-      'email': 'alex@example.com',
-      'password': '123456',
+      email: 'alex@example.com',
+      password: '123456',
+      confirmPassword: '123456',
     },
   ],
 };

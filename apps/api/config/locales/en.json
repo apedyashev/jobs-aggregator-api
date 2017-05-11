@@ -1,4 +1,9 @@
 {
-	"Welcome": "Welcome",
-	"A brand new app.": "A brand new app."
+  "users.email.email": "Email format is incorrect",
+  "users.email.required": "Email is required",
+  "users.email.unique": "User with given email already exists",
+  "users.password.required": "Password is required",
+  "users.password.minLength": "Password length must be at least 6 symbols",
+  "users.password.passwordConfirmed": "Please confirm your password"
+
 }

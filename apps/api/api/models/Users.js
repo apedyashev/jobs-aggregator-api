@@ -23,45 +23,68 @@
  module.exports = {
    schema: true,
 
-   attributes: {
-     email: {
-       type: 'email',
-       required: 'true',
-       unique: true,
-     },
+  types: {
+    passwordConfirmed(confirmPassword) {
+      return confirmPassword === this.password;
+    },
+  },
 
-     encryptedPassword: {
-       type: 'string',
-     },
-     // We don't wan't to send back encrypted password either
-     toJSON() {
-       const obj = this.toObject();
-       delete obj.encryptedPassword;
-       return obj;
-     },
-   },
-   // Here we encrypt password before creating a User
-   beforeCreate(values, next) {
-     bcrypt.genSalt(10, (err, salt) => {
-       if(err) return next(err);
+  attributes: {
+    email: {
+      type: 'email',
+      required: 'true',
+      unique: true,
+    },
 
-       bcrypt.hash(values.password, salt, (err, hash) => {
-         if(err) return next(err);
-         values.encryptedPassword = hash;
-         return next();
-       });
-     });
-   },
+    password: {
+      required: 'true',
+      minLength: 6,
+    },
 
-   comparePassword(password, user, cb) {
-     bcrypt.compare(password, user.encryptedPassword, (err, match) => {
-       if(err) return cb(err);
+    confirmPassword: {
+      passwordConfirmed: 'true',
+    },
 
-       if(match) {
-         return cb(null, true);
-       } else {
-         return cb(err);
-       }
-     });
-   },
+    // We don't wan't to send back encrypted password either
+    toJSON() {
+      const obj = this.toObject();
+      //  delete obj.encryptedPassword;
+      delete obj.password;
+      return obj;
+    },
+  },
+
+  // Here we encrypt password before creating a User
+  beforeCreate(values, next) {
+    // confirmPassword is used only for validation, we don't want to save it to DB
+    delete values.confirmPassword;
+
+    if (!values.password) {
+      // just call next withot errors - models validation will generate necessary errors
+      return next();
+    }
+
+    bcrypt.genSalt(10, (err, salt) => {
+      if(err) return next(err);
+
+      bcrypt.hash(values.password, salt, (err, hash) => {
+        if(err) return next(err);
+        values.password = hash;
+        return next();
+      });
+    });
+  },
+
+  comparePassword(password, user, cb) {
+    //  bcrypt.compare(password, user.encryptedPassword, (err, match) => {
+    bcrypt.compare(password, user.password, (err, match) => {
+      if(err) return cb(err);
+
+      if(match) {
+        return cb(null, true);
+      } else {
+        return cb(err);
+      }
+    });
+  },
  };
