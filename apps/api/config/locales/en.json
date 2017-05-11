@@ -1,4 +1,6 @@
 {
+  "users.firstName.required": "First name is required",
+  "users.lastName.required": "Last name is required",
   "users.email.email": "Email format is incorrect",
   "users.email.required": "Email is required",
   "users.email.unique": "User with given email already exists",

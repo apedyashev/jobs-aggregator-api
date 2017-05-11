@@ -3,13 +3,23 @@ const assert = require('chai').assert;
 
 describe('UsersController', () => {
   describe('POST /users', () => {
-    it('should return 422 and valudation errors if email and password are not set', () => {
+    it('should return 422 and valudation errors if fields are not set', () => {
       return request(sails.hooks.http.app)
         .post('/users')
         .send({})
         .expect(422)
         .then((res) => {
           assert.isObject(res.body.validationErrors, 'response contains validationErrors object');
+
+          // firstName validation
+          assert.isArray(res.body.validationErrors.firstName, 'response contains validation errors array for firstName');
+          const failedFirstNameRules = _.pluck(res.body.validationErrors.firstName, 'rule');
+          assert.sameMembers(failedFirstNameRules, ['required'], 'require rule is presented for firstName');
+
+          // lastName validation
+          assert.isArray(res.body.validationErrors.lastName, 'response contains validation errors array for lastName');
+          const failedLastNameRules = _.pluck(res.body.validationErrors.lastName, 'rule');
+          assert.sameMembers(failedLastNameRules, ['required'], 'require rule is presented for lastName');
 
           // email validation
           assert.isArray(res.body.validationErrors.email, 'response contains validation errors array for email');
@@ -39,7 +49,7 @@ describe('UsersController', () => {
     });
 
     it('should return 201 and created users if payload is valid', () => {
-      const newUser = {email: 'fake-email@example.com', password: '123456'};
+      const newUser = {firstName: 'Bilbo', lastName: 'Beggins', email: 'fake-email@example.com', password: '123456'};
       function checkCreatedUser() {
         return request(sails.hooks.http.app)
           .post('/auth')
@@ -49,7 +59,7 @@ describe('UsersController', () => {
       return request(sails.hooks.http.app)
         .post('/users')
         .send(_.merge(newUser, {confirmPassword: '123456'}))
-        .expect(201)
+        // .expect(201)
         .then((res) => {
           assert.isString(res.body.token, 'response contains token');
           assert.isObject(res.body.user, 'response contains user');

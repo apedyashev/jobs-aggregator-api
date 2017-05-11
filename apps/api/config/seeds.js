@@ -10,6 +10,8 @@
 module.exports.seeds = {
   users: [
     {
+      firstName: 'Default',
+      lastName: 'User',
       email: 'alex@example.com',
       password: '123456',
       confirmPassword: '123456',

@@ -30,19 +30,25 @@
   },
 
   attributes: {
+    firstName: {
+      required: true,
+    },
+    lastName: {
+      required: true,
+    },
     email: {
       type: 'email',
-      required: 'true',
+      required: true,
       unique: true,
     },
 
     password: {
-      required: 'true',
+      required: true,
       minLength: 6,
     },
 
     confirmPassword: {
-      passwordConfirmed: 'true',
+      passwordConfirmed: true,
     },
 
     // We don't wan't to send back encrypted password either
