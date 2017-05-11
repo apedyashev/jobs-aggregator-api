@@ -48,7 +48,7 @@ describe('UsersController', () => {
         });
     });
 
-    it('should return 201 and created users if payload is valid', () => {
+    it('should return 201 and created user if payload is valid', () => {
       const newUser = {firstName: 'Bilbo', lastName: 'Beggins', email: 'fake-email@example.com', password: '123456'};
       function checkCreatedUser() {
         return request(sails.hooks.http.app)
@@ -59,7 +59,7 @@ describe('UsersController', () => {
       return request(sails.hooks.http.app)
         .post('/users')
         .send(_.merge(newUser, {confirmPassword: '123456'}))
-        // .expect(201)
+        .expect(201)
         .then((res) => {
           assert.isString(res.body.token, 'response contains token');
           assert.isObject(res.body.user, 'response contains user');

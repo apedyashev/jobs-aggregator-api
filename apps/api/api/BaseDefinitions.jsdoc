@@ -17,10 +17,18 @@
 *     properties:
 *       message:
 *         type: string
+*       validationErrors:
+*         type: object
+*         schema:
+*           $ref: "#/definitions/ValidationErrorsObject"
+*   ValidationErrorsObject:
+*     type: object
+*     properties:
 *       fieldName:
 *         type: array
 *         items:
 *           $ref: "#/definitions/ValidationErrorItem"
+*
 *   ValidationErrorItem:
 *     properties:
 *       rule:

@@ -33,6 +33,7 @@
   "license": "",
   "devDependencies": {
     "chai": "3.5.0",
+    "chai-properties": "1.2.1",
     "eslint": "3.19.0",
     "eslint-config-google": "0.7.1",
     "grunt": "1.0.1",

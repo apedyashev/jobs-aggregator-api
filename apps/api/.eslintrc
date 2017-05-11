@@ -12,7 +12,8 @@
     "sails": true,
     "jwToken": true,
     "_": true,
-    "Jobs": true
+    "Jobs": true,
+    "Subscriptions": true
   },
   "rules": {
     "max-len": "off",

@@ -1,4 +1,6 @@
 const sails = require('sails');
+const chai = require('chai');
+chai.use(require('chai-properties'));
 
 before(function(done) {
   // Increase the Mocha timeout so that Sails has enough time to lift.

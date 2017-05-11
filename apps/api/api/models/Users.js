@@ -47,8 +47,14 @@
       minLength: 6,
     },
 
+    // used only for validation
     confirmPassword: {
       passwordConfirmed: true,
+    },
+
+    subscriptions: {
+      collection: 'subscriptions',
+      via: 'user',
     },
 
     // We don't wan't to send back encrypted password either
