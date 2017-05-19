@@ -16,7 +16,7 @@ module.exports = {
   * @swagger
   * /jobs:
   *   get:
-  *     description: Lists jobs
+  *     summary: Lists jobs
   *     tags: [Jobs]
   *     produces:
   *       - application/json
@@ -26,7 +26,7 @@ module.exports = {
   *       - $ref: "#/parameters/sortBy"
   *     responses:
   *       200:
-  *         description: login
+  *         description: Ok
   *
   */
   index(req, res) {
@@ -49,7 +49,7 @@ module.exports = {
   * @swagger
   * /subscriptions/:subscriptionId/jobs:
   *   get:
-  *     description: Lists jobs
+  *     summary: Lists jobs for specific subscription
   *     tags: [Jobs]
   *     produces:
   *       - application/json

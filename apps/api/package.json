@@ -9,7 +9,7 @@
     "start": "node app.js",
     "lint": "eslint ./",
     "precommit": "docker-compose run app npm run test",
-    "test": "PORT=9999 NODE_ENV=test node ./node_modules/mocha/bin/mocha test/bootstrap.test.js test/integration/**/*.test.js"
+    "test": "env NODE_PATH=test PORT=9999 NODE_ENV=test node ./node_modules/mocha/bin/mocha test/bootstrap.test.js test/integration/**/*.test.js"
   },
   "dependencies": {
     "bcrypt": "^1.0.2",

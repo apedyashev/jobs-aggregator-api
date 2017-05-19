@@ -27,7 +27,7 @@
    * @swagger
    * /auth:
    *   post:
-   *     description: Login to the application
+   *     summary: Login to the application
    *     tags: [Auth]
    *     produces:
    *       - application/json

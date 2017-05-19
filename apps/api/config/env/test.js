@@ -9,6 +9,15 @@ module.exports = {
         confirmPassword: '123456',
       },
     ],
+
+    jobs: [
+      {title: 'seeded-job1'},
+      {title: 'seeded-job2'},
+      {title: 'seeded-job3'},
+      {title: 'seeded-job4'},
+      {title: 'seeded-job5'},
+      {title: 'seeded-job6'}
+    ]
   },
 
   connections: {

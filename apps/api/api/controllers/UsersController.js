@@ -17,7 +17,7 @@
    * @swagger
    * /users:
    *   post:
-   *     description: Creates a new user
+   *     summary: Creates a new user
    *     tags: [Users]
    *     produces:
    *       - application/json
@@ -78,7 +78,7 @@
   * @swagger
   * /users/profile:
   *   get:
-  *     description: Returs user by auth token
+  *     summary: Returs user by auth token
   *     tags: [Users]
   *     produces:
   *       - application/json

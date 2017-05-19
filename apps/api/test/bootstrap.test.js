@@ -1,10 +1,11 @@
 const sails = require('sails');
 const chai = require('chai');
+const request = require('supertest');
 chai.use(require('chai-properties'));
 
 before(function(done) {
   // Increase the Mocha timeout so that Sails has enough time to lift.
-  this.timeout(20000);
+  this.timeout(25000);
 
   sails.lift({
     models: {
@@ -16,7 +17,20 @@ before(function(done) {
       return done(err);
     }
     // here you can load fixtures, etc.
-    return done(err, sails);
+
+    const [defaultUser] = sails.config.seeds.users;
+    request(sails.hooks.http.app)
+      .post('/auth')
+      .send({email: defaultUser.email, password: defaultUser.password})
+      .expect(200)
+      .then((res) => {
+        chai.assert.isString(res.body.token, 'token is set');
+        chai.assert.isObject(res.body.user, 'user is set');
+        global.authHeader = `Bearer ${res.body.token}`;
+        global.loggedUser = res.body.user;
+
+        return done(err);
+      });
   });
 });
 

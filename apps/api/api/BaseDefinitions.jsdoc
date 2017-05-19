@@ -29,6 +29,7 @@
 *         items:
 *           $ref: "#/definitions/ValidationErrorItem"
 *
+*
 *   ValidationErrorItem:
 *     properties:
 *       rule:
@@ -37,6 +38,12 @@
 *         type: string
 *
 * parameters:
+*   id:
+*     name: id
+*     in: path
+*     description: Resource ID
+*     required: true
+*     type: string
 *   page:
 *     name: page
 *     in: query

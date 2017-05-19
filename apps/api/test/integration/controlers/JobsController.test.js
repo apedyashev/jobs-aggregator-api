@@ -3,21 +3,21 @@ const assert = require('chai').assert;
 
 describe('JobsController', () => {
   describe('GET /jobs', () => {
-    const jobs = [{title: 'job1'}, {title: 'job2'}, {title: 'job3'}, {title: 'job4'}, {title: 'job5'}, {title: 'job6'}];
+    let jobs = null;
+    let meta = null;
     before(() => {
-      return Jobs.create(jobs);
+      jobs = sails.config.seeds.jobs;
+      meta = {
+        paginate: {
+          currentPage: 1,
+          nextPage: null,
+          prevPage: null,
+          totalPages: 1,
+          totalCount: jobs.length,
+          perPage: 50,
+        },
+      };
     });
-
-    const meta = {
-      paginate: {
-        currentPage: 1,
-        nextPage: null,
-        prevPage: null,
-        totalPages: 1,
-        totalCount: jobs.length,
-        perPage: 50,
-      },
-    };
 
     it('should return the list of the jobs without authentication', () => {
       return request(sails.hooks.http.app)
