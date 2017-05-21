@@ -34,9 +34,11 @@ module.exports = {
     },
     keywords: {
       type: 'array',
+      defaultsTo: [],
     },
     cities: {
       type: 'array',
+      defaultsTo: [],
     },
     user: {
       model: 'users',

@@ -28,7 +28,30 @@
 *         type: array
 *         items:
 *           $ref: "#/definitions/ValidationErrorItem"
-*
+*   MetaDataObject:
+*     type: object
+*     properties:
+*       pagination:
+*         type: object
+*         schema:
+*           $ref: "#/definitions/PaginationObject"
+*   PaginationObject:
+*     type: object
+*     properties:
+*       currentPage:
+*         type: number
+*       nextPage:
+*         type: number
+*         enum: ['null', 'number']
+*       prevPage:
+*         type: number
+*         enum: ['null', 'number']
+*       totalPages:
+*         type: number
+*       totalCount:
+*         type: number
+*       perPage:
+*         type: number
 *
 *   ValidationErrorItem:
 *     properties:

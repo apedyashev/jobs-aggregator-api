@@ -57,12 +57,16 @@ module.exports = {
   *           - type: string
   */
   create(req, res) {
+    if (!_.isPlainObject(req.body)) {
+      return res.badRequest('Payload must be a plain object');
+    }
+
     const subscriptionData = _.merge({}, req.body, {user: req.userId});
     Subscriptions.create(subscriptionData).then((item) => {
       return res.created({item});
     }).catch((err) => {
       if (err.Errors) {
-         return res.validationError('validation failed', err.Errors);
+         return res.validationError('Subscription create validation failed', err.Errors);
       } else {
          return res.serverError('Subscription create error', err);
       }
@@ -97,6 +101,10 @@ module.exports = {
   *         type: array
   *         items:
   *           $ref: "#/definitions/SerializedSubscription"
+  *       meta:
+  *         type: object
+  *         schema:
+  *           $ref: "#/definitions/MetaDataObject"
   */
   find(req, res) {
     const page = +req.param('page', 1);
@@ -117,7 +125,7 @@ module.exports = {
 
   /**
   * @swagger
-  * /subscriptions/:id:
+  * /subscriptions/{id}:
   *   get:
   *     summary: Returns a subscription by id
   *     tags: [Subscriptions]
@@ -153,7 +161,7 @@ module.exports = {
 
   /**
   * @swagger
-  * /subscriptions/:id:
+  * /subscriptions/{id}:
   *   put:
   *     summary: Updates (patches) a subscription
   *     description: This endpoint works as PATCH, i.e updates only those fields which are presented in the request payload
@@ -202,7 +210,7 @@ module.exports = {
       return res.ok({item: item || {}});
     }).catch((err) => {
       if (err.Errors) {
-         return res.validationError('validation failed', err.Errors);
+         return res.validationError('Subscription update validation failed', err.Errors);
       }
       return res.serverError('Subscription update error', err);
     });
@@ -210,7 +218,7 @@ module.exports = {
 
   /**
   * @swagger
-  * /subscriptions/:id:
+  * /subscriptions/{id}:
   *   delete:
   *     summary: Removes a subscription
   *     tags: [Subscriptions]
@@ -239,6 +247,77 @@ module.exports = {
       return res.notFound(`subscription ${subscriptionId} not found`);
     }).catch((err) => {
       return res.serverError('Subscription destroy error', err);
+    });
+  },
+
+  /**
+  * @swagger
+  * /subscriptions/{id}/jobs:
+  *   get:
+  *     summary: Lists jobs for specific subscription
+  *     description: |
+  *       Searches jobs by city (OR logic is used for multiple cities) and/or by keywords in title
+  *       and the shortDescription fields (AND logic is used for multiple keywords)
+  *     tags: [Subscriptions]
+  *     produces:
+  *       - application/json
+  *     parameters:
+  *       - $ref: "#/parameters/AuthorizationHeader"
+  *       - $ref: "#/parameters/id"
+  *       - $ref: "#/parameters/page"
+  *       - $ref: "#/parameters/perPage"
+  *       - $ref: "#/parameters/sortBy"
+  *     responses:
+  *       200:
+  *        description: Ok
+  *        schema:
+  *          $ref: "#/definitions/JobsListResponseOk"
+  *       401:
+  *         description: Unatorized (auth token is invalid)
+  *       404:
+  *         description: Subscription not found
+  *       500:
+  *         description: Server error
+  */
+  getBySubscription(req, res) {
+    const subscriptionId = req.param('id');
+    Subscriptions.findOne({id: subscriptionId, user: req.userId}).then((subscription) => {
+      if(subscription) {
+        // build jobs query based on subscription
+        const and = [];
+        subscription.keywords.forEach((keyword) => {
+          const or = [];
+          or.push({shortDescription: {like: `%${keyword}%`}});
+          or.push({title: {like: `%${keyword}%`}});
+          and.push({or});
+        });
+
+        const findQuery = {};
+        if (subscription.cities.length) {
+          findQuery.city = subscription.cities;
+        }
+        if (and.length) {
+          findQuery.and = and;
+        }
+
+        // query paginated jobs
+        const page = +req.param('page', 1);
+        const perPage = +req.param('perPage', 50);
+        const sortBy = req.param('sortBy', 'createdAt:DESC');
+        const [sortByField, sortByDirection] = sortBy.split(':');
+        return Jobs.pagify('items', {
+          findQuery,
+          sort: [`${sortByField || 'createdAt'} ${sortByDirection || 'DESC'}`],
+          page,
+          perPage,
+        }).then((data) => {
+          res.ok(data);
+        });
+      } else {
+        return res.notFound('Subscription not found');
+      }
+    }).catch((e) => {
+      res.serverError('Server error in getBySubscription', e);
     });
   },
 };

@@ -12,6 +12,7 @@ const mongoose = require('mongoose');
 const async = require('async');
 const moment = require('moment');
 const Job = mongoose.model('Job');
+const {camelizeKeys} = require('humps');
 const config = require('../config');
 
 class Scrapper {
@@ -21,7 +22,7 @@ class Scrapper {
 
   saveJob(jobData) {
     jobData.date = moment(jobData.date, 'DD.MM.YYYY').format();
-    var job = new Job(jobData);
+    var job = new Job(camelizeKeys(jobData));
     return job.save().catch((err) => {
       if (err && (err.code !== 11000) && (err.code !== 11001)) {
         Promise.reject(err);

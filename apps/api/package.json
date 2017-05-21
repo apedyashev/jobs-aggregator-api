@@ -36,6 +36,7 @@
     "chai-properties": "1.2.1",
     "eslint": "3.19.0",
     "eslint-config-google": "0.7.1",
+    "faker": "4.1.0",
     "grunt": "1.0.1",
     "husky": "0.13.3",
     "mocha": "3.3.0",

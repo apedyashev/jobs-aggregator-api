@@ -88,7 +88,6 @@
   },
 
   comparePassword(password, user, cb) {
-    //  bcrypt.compare(password, user.encryptedPassword, (err, match) => {
     bcrypt.compare(password, user.password, (err, match) => {
       if(err) return cb(err);
 

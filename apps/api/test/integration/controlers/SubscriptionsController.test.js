@@ -1,5 +1,8 @@
+/* global authHeader, loggedUser */
 const request = require('supertest');
 const assert = require('chai').assert;
+const faker = require('faker');
+const _ = require('lodash');
 const {seedSubscription} = require('seeders');
 const mocks = require('mocks');
 
@@ -216,7 +219,7 @@ describe('SubscriptionsController', () => {
     it('should return the list of the subscriptions sorted by `title`, DESC', () => {
       const meta = mocks.meta({totalCount: subscriptions.length});
       return request(sails.hooks.http.app)
-        .get('/subscriptions?sortBy=title:desc')
+        .get('/subscriptions?sortBy=id:desc')
         .set('Authorization', authHeader)
         .expect(200)
         .expect((res) => {
@@ -247,7 +250,7 @@ describe('SubscriptionsController', () => {
         nextPage: 2,
       });
       return request(sails.hooks.http.app)
-        .get('/subscriptions?page=1&perPage=2&sortBy=title:asc')
+        .get('/subscriptions?page=1&perPage=2&sortBy=id:asc')
         .set('Authorization', authHeader)
         .expect(200)
         .expect((res) => {
@@ -267,7 +270,7 @@ describe('SubscriptionsController', () => {
         perPage: 3,
       });
       return request(sails.hooks.http.app)
-        .get('/subscriptions?page=2&perPage=3&sortBy=title:asc')
+        .get('/subscriptions?page=2&perPage=3&sortBy=id:asc')
         .set('Authorization', authHeader)
         .expect(200)
         .expect((res) => {
@@ -354,6 +357,239 @@ describe('SubscriptionsController', () => {
         .del(`/subscriptions/${currentSubscription.id}`)
         .set('Authorization', '')
         .expect(401);
+    });
+  });
+
+  describe('GET /subscriptions/:id/jobs', () => {
+    const keywords = _.range(10).map((i) => `uniq-keyword-for-testing${i}`);
+    const cities = _.range(10).map(() => faker.address.city());
+    const jobs = [
+      {title: faker.fake(`0 {{lorem.words}} ${keywords[0]} {{lorem.words}}`), city: cities[1]},
+      {title: faker.fake(`1 {{lorem.words}} ${keywords[1]} {{lorem.words}}`), city: cities[0]},
+      {title: faker.fake(`2 {{lorem.words}} ${keywords[2]} {{lorem.words}}`)},
+      {title: faker.fake(`3 {{lorem.words}} ${keywords[3]} {{lorem.words}}`), city: cities[2]},
+      {title: faker.fake(`4 {{lorem.words}} ${keywords[4]} {{lorem.words}}`)},
+      {title: faker.fake(`5 {{lorem.words}} ${keywords[5]} {{lorem.words}}`), city: cities[3]},
+      {title: faker.fake(`6 {{lorem.words}} ${keywords[3]} {{lorem.words}}`)},
+      {title: faker.fake(`7 {{lorem.words}} ${keywords[5]} ${keywords[3]} ${keywords[1]} {{lorem.words}}`)},
+      {title: faker.fake(`8 {{lorem.words}} ${keywords[6]} ${keywords[3]} {{lorem.words}}`)},
+      {
+        title: faker.fake(`9 {{lorem.words}}`),
+        shortDescription: faker.fake(`{{lorem.words}} ${keywords[7]} {{lorem.words}}`),
+      },
+      {
+        title: faker.fake(`10 {{lorem.words}} ${keywords[8]} {{lorem.words}}`),
+        shortDescription: faker.fake(`{{lorem.words}} ${keywords[9]} {{lorem.words}}`),
+      },
+    ];
+    let createdJobIds = [];
+    before(() => {
+      return Promise.all([Jobs.destroy(), Subscriptions.destroy()]).then(() => {
+        return Jobs.create(jobs).then((createdJobs) => {
+          createdJobIds = _.pluck(createdJobs, 'id');
+        });
+      });
+    });
+
+    it('should return jobs for subscription with single city', () => {
+      const newSubscription = {title: 'by single city', cities: [cities[0]]};
+
+      return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
+        return request(sails.hooks.http.app)
+          .get(`/subscriptions/${subscription.id}/jobs`)
+          .set('Authorization', authHeader)
+          .expect(200)
+          .then((res) => {
+            assert.isArray(res.body.items, 'response contains items array');
+            const jobIds = _.pluck(res.body.items, 'id');
+            const expectedJobIds = [createdJobIds[1]];
+            assert.sameMembers(jobIds, expectedJobIds, 'returns expected jobs');
+          });
+      });
+    });
+
+    it('should return jobs for subscription with 3 cities', () => {
+      const newSubscription = {title: 'by cities', cities: [cities[1], cities[2], cities[3]]};
+
+      return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
+        return request(sails.hooks.http.app)
+          .get(`/subscriptions/${subscription.id}/jobs`)
+          .set('Authorization', authHeader)
+          .expect(200)
+          .then((res) => {
+            assert.isArray(res.body.items, 'response contains items array');
+            const jobIds = _.pluck(res.body.items, 'id');
+            const expectedJobIds = [createdJobIds[0], createdJobIds[3], createdJobIds[5]];
+            assert.sameMembers(jobIds, expectedJobIds, 'returns expected jobs');
+          });
+      });
+    });
+
+    // BEGIN of pagination and sorting tests
+    it('should return 1 job when page=1 and perPage=1', () => {
+      const newSubscription = {title: 'by cities', cities: [cities[1], cities[2], cities[3]]};
+
+      return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
+        return request(sails.hooks.http.app)
+          .get(`/subscriptions/${subscription.id}/jobs?page=1&perPage=1&sortBy=id:ASC`)
+          .set('Authorization', authHeader)
+          .expect(200)
+          .then((res) => {
+            assert.isArray(res.body.items, 'response contains items array');
+            const jobIds = _.pluck(res.body.items, 'id');
+            // all job indexes for this subscription: 0, 3, 5
+            const expectedJobIds = [createdJobIds[0]];
+            assert.sameMembers(jobIds, expectedJobIds, 'returns expected jobs');
+
+            // total 3 jobs are expecting for this subscription
+            const meta = mocks.meta({totalCount: 3, totalPages: 3, perPage: 1, nextPage: 2});
+            assert.haveProperties(res.body.meta, meta, 'meta is correct');
+          });
+      });
+    });
+
+    it('should return 2 jobs when page=1 and perPage=2', () => {
+      const newSubscription = {title: 'by cities', cities: [cities[1], cities[2], cities[3]]};
+
+      return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
+        return request(sails.hooks.http.app)
+          .get(`/subscriptions/${subscription.id}/jobs?page=1&perPage=2&sortBy=id:ASC`)
+          .set('Authorization', authHeader)
+          .expect(200)
+          .then((res) => {
+            assert.isArray(res.body.items, 'response contains items array');
+            const jobIds = _.pluck(res.body.items, 'id');
+            // all job indexes for this subscription: 0, 3, 5
+            const expectedJobIds = [createdJobIds[0], createdJobIds[3]];
+            assert.sameMembers(jobIds, expectedJobIds, 'returns expected jobs');
+
+            // total 3 jobs are expecting for this subscription
+            const meta = mocks.meta({totalCount: 3, totalPages: 2, perPage: 2, nextPage: 2});
+            assert.haveProperties(res.body.meta, meta, 'meta is correct');
+          });
+      });
+    });
+
+    it('should return 2 jobs in sorted by id:DESC when page=1 and perPage=2', () => {
+      const newSubscription = {title: 'by cities', cities: [cities[1], cities[2], cities[3]]};
+
+      return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
+        return request(sails.hooks.http.app)
+          .get(`/subscriptions/${subscription.id}/jobs?page=1&perPage=2&sortBy=id:DESC`)
+          .set('Authorization', authHeader)
+          .expect(200)
+          .then((res) => {
+            assert.isArray(res.body.items, 'response contains items array');
+            const jobIds = _.pluck(res.body.items, 'id');
+            // all job indexes for this subscription: 0, 3, 5
+            const expectedJobIds = [createdJobIds[5], createdJobIds[3]];
+            assert.sameMembers(jobIds, expectedJobIds, 'returns expected jobs');
+
+            // total 3 jobs are expecting for this subscription
+            const meta = mocks.meta({totalCount: 3, totalPages: 2, perPage: 2, nextPage: 2});
+            assert.haveProperties(res.body.meta, meta, 'meta is correct');
+          });
+      });
+    });
+
+    it('should return 1 job when page=2 and perPage=2', () => {
+      const newSubscription = {title: 'by cities', cities: [cities[1], cities[2], cities[3]]};
+
+      return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
+        return request(sails.hooks.http.app)
+          .get(`/subscriptions/${subscription.id}/jobs?page=2&perPage=2&sortBy=id:ASC`)
+          .set('Authorization', authHeader)
+          .expect(200)
+          .then((res) => {
+            assert.isArray(res.body.items, 'response contains items array');
+            const jobIds = _.pluck(res.body.items, 'id');
+            // all job indexes for this subscription: 0, 3, 5
+            const expectedJobIds = [createdJobIds[5]];
+            assert.sameMembers(jobIds, expectedJobIds, 'returns expected jobs');
+
+            // total 3 jobs are expecting for this subscription
+            const meta = mocks.meta({totalCount: 3, totalPages: 2, perPage: 2, nextPage: null, prevPage: 1, currentPage: 2});
+            assert.haveProperties(res.body.meta, meta, 'meta is correct');
+          });
+      });
+    });
+    // END of pagination and sorting tests
+
+    it('should return jobs for subscription with a keyword in the title', () => {
+      const newSubscription = {title: 'by a keyword', keywords: [keywords[3]]};
+
+      return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
+        return request(sails.hooks.http.app)
+          .get(`/subscriptions/${subscription.id}/jobs`)
+          .set('Authorization', authHeader)
+          .expect(200)
+          .then((res) => {
+            assert.isArray(res.body.items, 'response contains items array');
+            const jobIds = _.pluck(res.body.items, 'id');
+            const expectedJobIds = [createdJobIds[3], createdJobIds[6], createdJobIds[7], createdJobIds[8]];
+            assert.sameMembers(jobIds, expectedJobIds, 'returns expected jobs');
+          });
+      });
+    });
+
+    it('should return jobs for subscription with multiple keywords in the single title', () => {
+      const newSubscription = {title: 'by a keyword', keywords: [keywords[3], keywords[1], keywords[5]]};
+
+      return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
+        return request(sails.hooks.http.app)
+          .get(`/subscriptions/${subscription.id}/jobs`)
+          .set('Authorization', authHeader)
+          .expect(200)
+          .then((res) => {
+            assert.isArray(res.body.items, 'response contains items array');
+            const jobIds = _.pluck(res.body.items, 'id');
+            const expectedJobIds = [createdJobIds[7]];
+            assert.sameMembers(jobIds, expectedJobIds, 'returns expected jobs');
+          });
+      });
+    });
+
+    it('should return jobs for subscription with a keyword in the descriptions', () => {
+      const newSubscription = {title: 'by a keyword in descr', keywords: [keywords[7]]};
+
+      return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
+        return request(sails.hooks.http.app)
+          .get(`/subscriptions/${subscription.id}/jobs`)
+          .set('Authorization', authHeader)
+          .expect(200)
+          .then((res) => {
+            assert.isArray(res.body.items, 'response contains items array');
+            const jobIds = _.pluck(res.body.items, 'id');
+            const expectedJobIds = [createdJobIds[9]];
+            assert.sameMembers(jobIds, expectedJobIds, 'returns expected jobs');
+          });
+      });
+    });
+
+    it('should return jobs for subscription with keywords in both title and descriptions', () => {
+      const newSubscription = {title: 'by a keyword in descr', keywords: [keywords[8], keywords[9]]};
+
+      return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
+        return request(sails.hooks.http.app)
+          .get(`/subscriptions/${subscription.id}/jobs`)
+          .set('Authorization', authHeader)
+          .expect(200)
+          .then((res) => {
+            assert.isArray(res.body.items, 'response contains items array');
+            const jobIds = _.pluck(res.body.items, 'id');
+            const expectedJobIds = [createdJobIds[10]];
+            assert.sameMembers(jobIds, expectedJobIds, 'returns expected jobs');
+          });
+      });
+    });
+
+    it('should return 401 if auth header is empty', () => {
+      return seedSubscription({authHeader}).then((subscription) => {
+        return request(sails.hooks.http.app)
+          .get(`/subscriptions/${subscription.id}/jobs`)
+          .set('Authorization', '')
+          .expect(401);
+      });
     });
   });
 });

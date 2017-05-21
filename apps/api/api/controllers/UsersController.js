@@ -32,6 +32,8 @@
    *     responses:
    *       201:
    *        description: Created
+   *        schema:
+   *          $ref: "#/definitions/AuthorizationResponseOk"
    *       422:
    *         description: Validation error
    *         schema:
@@ -52,7 +54,6 @@
    *         type: string
    *       confirmPassword:
    *         type: string
-   *
    */
    create(req, res) {
      Users.create(req.body).exec((err, user) => {
@@ -87,9 +88,18 @@
   *     responses:
   *       200:
   *        description: OK
+  *        schema:
+  *          $ref: "#/definitions/UserResponseOk"
   *       404:
   *         description: user not found
-  *
+  * definitions:
+  *   UserResponseOk:
+  *     required:
+  *      - item
+  *     properties:
+  *       item:
+  *         type: object
+  *         $ref: "#/definitions/SerializedUser"
   */
   profile(req, res) {
     const {userId} = req.tokenPayload;

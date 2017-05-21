@@ -16,8 +16,8 @@ module.exports = {
       {title: 'seeded-job3'},
       {title: 'seeded-job4'},
       {title: 'seeded-job5'},
-      {title: 'seeded-job6'}
-    ]
+      {title: 'seeded-job6'},
+    ],
   },
 
   connections: {

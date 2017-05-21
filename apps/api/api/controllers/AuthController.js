@@ -32,7 +32,6 @@
    *     produces:
    *       - application/json
    *     parameters:
-   *       - $ref: "#/parameters/AuthorizationHeader"
    *       - name: payload
    *         description: Endpoint's payload.
    *         in: body
@@ -43,7 +42,6 @@
    *       200:
    *         description: OK
    *         schema:
-   *           type: object
    *           $ref: '#/definitions/AuthorizationResponseOk'
    *
    * definitions:
@@ -83,8 +81,9 @@
        }
 
        Users.comparePassword(password, user, (err, valid) => {
+         console.log('err', err);
          if (err) {
-           return res.forbidden('forbidden');
+           return res.forbidden('forbidden', err);
          }
 
          if (!valid) {

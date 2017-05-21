@@ -13,7 +13,7 @@ var JobSchema = new Schema({
 	title: {
 		type: String
 	},
-	short_description: {
+	shortDescription: {
 		type: String
 	},
 	availability: {

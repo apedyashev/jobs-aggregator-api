@@ -48,7 +48,7 @@ module.exports.routes = {
   'POST /auth': 'AuthController.index',
 
   'GET /jobs': 'JobsController.index',
-  'GET /subscriptions/:subscriptionId/jobs': 'JobsController.getBySubscription',
+  'GET /subscriptions/:id/jobs': 'SubscriptionsController.getBySubscription',
 
   'GET /swagger/docs/api.json': (req, res) => {
     if (sails.config.environment !== 'production') {

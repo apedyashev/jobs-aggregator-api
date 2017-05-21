@@ -26,8 +26,22 @@ module.exports = {
   *       - $ref: "#/parameters/sortBy"
   *     responses:
   *       200:
-  *         description: Ok
+  *        description: Ok
+  *        schema:
+  *          $ref: "#/definitions/JobsListResponseOk"
   *
+  * definitions:
+  *   JobsListResponseOk:
+  *     type: object
+  *     properties:
+  *       items:
+  *         type: array
+  *         items:
+  *           $ref: "#/definitions/SerializedJob"
+  *       meta:
+  *         type: object
+  *         schema:
+  *           $ref: "#/definitions/MetaDataObject"
   */
   index(req, res) {
     const page = +req.param('page', 1);
@@ -43,32 +57,5 @@ module.exports = {
     }).catch((err) => {
       res.serverError(err);
     });
-  },
-
-  /**
-  * @swagger
-  * /subscriptions/:subscriptionId/jobs:
-  *   get:
-  *     summary: Lists jobs for specific subscription
-  *     tags: [Jobs]
-  *     produces:
-  *       - application/json
-  *     parameters:
-  *       - $ref: "#/parameters/AuthorizationHeader"
-  *       - $ref: "#/parameters/page"
-  *       - $ref: "#/parameters/perPage"
-  *       - $ref: "#/parameters/sortBy"
-  *     responses:
-  *       200:
-  *         description: login
-  *
-  */
-  getBySubscription(req, res) {
-    // const query = {};
-    // const subcriptionId = req.param('subscriptionId');
-    // if (subcriptionId) {
-    //
-    // }
-    req.ok();
   },
 };

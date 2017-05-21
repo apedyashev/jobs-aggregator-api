@@ -1,15 +1,27 @@
 const request = require('supertest');
 
-module.exports = function seedSubscription({authHeader}) {
-  const newSubscription = {
+module.exports = function seedSubscription({authHeader, data}) {
+  const newSubscription = data || {
     title: 'subscription' + _.padLeft(_.uniqueId(), 8, '0'),
     keywords: [_.uniqueId('keyword'), _.uniqueId('keyword')],
     cities: [_.uniqueId('city'), _.uniqueId('city')],
   };
-  return request(sails.hooks.http.app)
-    .post('/subscriptions')
-    .set('Authorization', authHeader)
-    .send(newSubscription)
-    .expect(201)
-    .then((res) => res.body.item);
-}
+  if (_.isArray(newSubscription)) {
+    const promises = newSubscription.map((subscription) => {
+      return request(sails.hooks.http.app)
+        .post('/subscriptions')
+        .set('Authorization', authHeader)
+        .send(subscription)
+        .expect(201)
+        .then((res) => res.body.item);
+    });
+    return Promise.all(promises);
+  } else {
+    return request(sails.hooks.http.app)
+      .post('/subscriptions')
+      .set('Authorization', authHeader)
+      .send(newSubscription)
+      .expect(201)
+      .then((res) => res.body.item);
+  }
+};
