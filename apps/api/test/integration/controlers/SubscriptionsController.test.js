@@ -219,7 +219,7 @@ describe('SubscriptionsController', () => {
     it('should return the list of the subscriptions sorted by `title`, DESC', () => {
       const meta = mocks.meta({totalCount: subscriptions.length});
       return request(sails.hooks.http.app)
-        .get('/subscriptions?sortBy=id:desc')
+        .get('/subscriptions?sortBy=title:desc')
         .set('Authorization', authHeader)
         .expect(200)
         .expect((res) => {
@@ -250,7 +250,7 @@ describe('SubscriptionsController', () => {
         nextPage: 2,
       });
       return request(sails.hooks.http.app)
-        .get('/subscriptions?page=1&perPage=2&sortBy=id:asc')
+        .get('/subscriptions?page=1&perPage=2&sortBy=title:asc')
         .set('Authorization', authHeader)
         .expect(200)
         .expect((res) => {
@@ -270,7 +270,7 @@ describe('SubscriptionsController', () => {
         perPage: 3,
       });
       return request(sails.hooks.http.app)
-        .get('/subscriptions?page=2&perPage=3&sortBy=id:asc')
+        .get('/subscriptions?page=2&perPage=3&sortBy=title:asc')
         .set('Authorization', authHeader)
         .expect(200)
         .expect((res) => {
@@ -364,17 +364,17 @@ describe('SubscriptionsController', () => {
     const keywords = _.range(10).map((i) => `uniq-keyword-for-testing${i}`);
     const cities = _.range(10).map(() => faker.address.city());
     const jobs = [
-      {title: faker.fake(`0 {{lorem.words}} ${keywords[0]} {{lorem.words}}`), city: cities[1]},
-      {title: faker.fake(`1 {{lorem.words}} ${keywords[1]} {{lorem.words}}`), city: cities[0]},
-      {title: faker.fake(`2 {{lorem.words}} ${keywords[2]} {{lorem.words}}`)},
-      {title: faker.fake(`3 {{lorem.words}} ${keywords[3]} {{lorem.words}}`), city: cities[2]},
-      {title: faker.fake(`4 {{lorem.words}} ${keywords[4]} {{lorem.words}}`)},
-      {title: faker.fake(`5 {{lorem.words}} ${keywords[5]} {{lorem.words}}`), city: cities[3]},
-      {title: faker.fake(`6 {{lorem.words}} ${keywords[3]} {{lorem.words}}`)},
-      {title: faker.fake(`7 {{lorem.words}} ${keywords[5]} ${keywords[3]} ${keywords[1]} {{lorem.words}}`)},
-      {title: faker.fake(`8 {{lorem.words}} ${keywords[6]} ${keywords[3]} {{lorem.words}}`)},
+      {title: faker.fake(`00 {{lorem.words}} ${keywords[0]} {{lorem.words}}`), city: cities[1]},
+      {title: faker.fake(`01 {{lorem.words}} ${keywords[1]} {{lorem.words}}`), city: cities[0]},
+      {title: faker.fake(`02 {{lorem.words}} ${keywords[2]} {{lorem.words}}`)},
+      {title: faker.fake(`03 {{lorem.words}} ${keywords[3]} {{lorem.words}}`), city: cities[2]},
+      {title: faker.fake(`04 {{lorem.words}} ${keywords[4]} {{lorem.words}}`)},
+      {title: faker.fake(`05 {{lorem.words}} ${keywords[5]} {{lorem.words}}`), city: cities[3]},
+      {title: faker.fake(`06 {{lorem.words}} ${keywords[3]} {{lorem.words}}`)},
+      {title: faker.fake(`07 {{lorem.words}} ${keywords[5]} ${keywords[3]} ${keywords[1]} {{lorem.words}}`)},
+      {title: faker.fake(`08 {{lorem.words}} ${keywords[6]} ${keywords[3]} {{lorem.words}}`)},
       {
-        title: faker.fake(`9 {{lorem.words}}`),
+        title: faker.fake(`09 {{lorem.words}}`),
         shortDescription: faker.fake(`{{lorem.words}} ${keywords[7]} {{lorem.words}}`),
       },
       {
@@ -431,7 +431,7 @@ describe('SubscriptionsController', () => {
 
       return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
         return request(sails.hooks.http.app)
-          .get(`/subscriptions/${subscription.id}/jobs?page=1&perPage=1&sortBy=id:ASC`)
+          .get(`/subscriptions/${subscription.id}/jobs?page=1&perPage=1&sortBy=title:ASC`)
           .set('Authorization', authHeader)
           .expect(200)
           .then((res) => {
@@ -453,7 +453,7 @@ describe('SubscriptionsController', () => {
 
       return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
         return request(sails.hooks.http.app)
-          .get(`/subscriptions/${subscription.id}/jobs?page=1&perPage=2&sortBy=id:ASC`)
+          .get(`/subscriptions/${subscription.id}/jobs?page=1&perPage=2&sortBy=title:ASC`)
           .set('Authorization', authHeader)
           .expect(200)
           .then((res) => {
@@ -475,7 +475,7 @@ describe('SubscriptionsController', () => {
 
       return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
         return request(sails.hooks.http.app)
-          .get(`/subscriptions/${subscription.id}/jobs?page=1&perPage=2&sortBy=id:DESC`)
+          .get(`/subscriptions/${subscription.id}/jobs?page=1&perPage=2&sortBy=title:DESC`)
           .set('Authorization', authHeader)
           .expect(200)
           .then((res) => {
@@ -497,7 +497,7 @@ describe('SubscriptionsController', () => {
 
       return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
         return request(sails.hooks.http.app)
-          .get(`/subscriptions/${subscription.id}/jobs?page=2&perPage=2&sortBy=id:ASC`)
+          .get(`/subscriptions/${subscription.id}/jobs?page=2&perPage=2&sortBy=title:ASC`)
           .set('Authorization', authHeader)
           .expect(200)
           .then((res) => {
@@ -517,7 +517,6 @@ describe('SubscriptionsController', () => {
 
     it('should return jobs for subscription with a keyword in the title', () => {
       const newSubscription = {title: 'by a keyword', keywords: [keywords[3]]};
-
       return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
         return request(sails.hooks.http.app)
           .get(`/subscriptions/${subscription.id}/jobs`)

@@ -3,7 +3,7 @@ module.exports = {
   mongo: {
     server: 'mongodb',
     port: 27017,
-    dbName: 'test'
+    dbName: 'jobs-aggregator'
   },
   scrapTargets: {
     jobscout: {

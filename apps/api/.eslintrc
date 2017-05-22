@@ -10,6 +10,7 @@
   },
   "globals": {
     "sails": true,
+    "async": true,
     "jwToken": true,
     "_": true,
     "Jobs": true,

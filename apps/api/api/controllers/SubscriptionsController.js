@@ -284,20 +284,20 @@ module.exports = {
     Subscriptions.findOne({id: subscriptionId, user: req.userId}).then((subscription) => {
       if(subscription) {
         // build jobs query based on subscription
-        const and = [];
+        const $and = [];
         subscription.keywords.forEach((keyword) => {
-          const or = [];
-          or.push({shortDescription: {like: `%${keyword}%`}});
-          or.push({title: {like: `%${keyword}%`}});
-          and.push({or});
+          const $or = [];
+          $or.push({shortDescription: {like: `%${keyword}%`}});
+          $or.push({title: {like: `%${keyword}%`}});
+          $and.push({$or});
         });
 
         const findQuery = {};
         if (subscription.cities.length) {
           findQuery.city = subscription.cities;
         }
-        if (and.length) {
-          findQuery.and = and;
+        if ($and.length) {
+          findQuery.$and = $and;
         }
 
         // query paginated jobs

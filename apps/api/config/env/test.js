@@ -22,7 +22,10 @@ module.exports = {
 
   connections: {
     testDb: {
-      adapter: 'sails-memory',
+      adapter: 'sails-mongo',
+      host: 'mongodb',
+      port: 27017,
+      database: 'test',
     },
   },
 };
