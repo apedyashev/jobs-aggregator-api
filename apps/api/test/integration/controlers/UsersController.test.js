@@ -1,5 +1,6 @@
 const request = require('supertest');
 const assert = require('chai').assert;
+const {seedSubscription} = require('seeders');
 
 describe('UsersController', () => {
   describe('POST /users', () => {
@@ -75,17 +76,32 @@ describe('UsersController', () => {
   describe('GET /users/profile', () => {
     let authHeader = null;
     let defaultUser = null;
+    let seededSubscriptions = null;
     before(() => {
-      // const [defaultUser] = sails.config.seeds.users;
       defaultUser = sails.config.seeds.users[0];
-      return request(sails.hooks.http.app)
-        .post('/auth')
-        .send({email: defaultUser.email, password: defaultUser.password})
-        .expect(200)
-        .then((res) => {
-          assert.isString(res.body.token, 'token is set');
-          authHeader = `Bearer ${res.body.token}`;
-        });
+
+      const loginAndSeed = () => {
+        return request(sails.hooks.http.app)
+          .post('/auth')
+          .send({email: defaultUser.email, password: defaultUser.password})
+          .expect(200)
+          .then((res) => {
+            assert.isString(res.body.token, 'token is set');
+            authHeader = `Bearer ${res.body.token}`;
+          }).then(() => {
+            return Promise.all([
+              seedSubscription({authHeader}),
+              seedSubscription({authHeader}),
+              seedSubscription({authHeader}),
+            ]).then((subscriptions) => {
+              seededSubscriptions = subscriptions;
+            });
+          });
+      };
+      return Promise.all([
+        Subscriptions.destroy(),
+        loginAndSeed(),
+      ]);
     });
 
     it('should return logged user by auth token', () => {
@@ -97,6 +113,9 @@ describe('UsersController', () => {
           assert.isObject(res.body.item, 'item contains user data');
           assert.notProperty(res.body.item, 'encryptedPassword', 'doesnt expose encryptedPassword');
           assert.equal(res.body.item.email, defaultUser.email, 'emails match');
+
+          assert.sameDeepMembers(res.body.item.subscriptions, seededSubscriptions,
+            'response contains populated subscriptions');
         });
     });
 

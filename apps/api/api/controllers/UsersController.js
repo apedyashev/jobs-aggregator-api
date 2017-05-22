@@ -103,7 +103,7 @@
   */
   profile(req, res) {
     const {userId} = req.tokenPayload;
-    Users.findOne({id: userId}).then((item) => {
+    Users.findOne({id: userId}).populate('subscriptions').then((item) => {
       item ? res.ok({item}) : res.notFound('user not found');
     }).catch((err) => {
       res.serverError(err);
