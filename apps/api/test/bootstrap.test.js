@@ -20,7 +20,7 @@ before(function(done) {
 
     const [defaultUser] = sails.config.seeds.users;
     request(sails.hooks.http.app)
-      .post('/auth')
+      .post('/auth/login')
       .send({email: defaultUser.email, password: defaultUser.password})
       .expect(200)
       .then((res) => {

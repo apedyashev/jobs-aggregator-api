@@ -6,6 +6,7 @@ app:
    - "1337:1337"
   links:
    - mongodb
+   - redis
   command: [nodemon, app.js]
 scrapper:
   build: ./apps/scrapper
@@ -28,5 +29,20 @@ mongoexpress:
     - "8082:8081"
 mongodb:
   image: mongo:3
+  volumes:
+    - ./runtime/redis:/data/db
   ports:
     - "27017:27017"
+redis:
+    image: redis:3
+    volumes:
+        - ./runtime/redis:/data
+    ports:
+        - 6379:6379
+redisCommander:
+    image: tenstartups/redis-commander
+    command: --redis-host redis
+    links:
+      - redis:redis
+    ports:
+      - "8095:8081"

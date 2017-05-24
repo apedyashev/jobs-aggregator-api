@@ -45,7 +45,9 @@ module.exports.routes = {
   * for configuration options and examples.                                  *
   *                                                                          *
   ***************************************************************************/
-  'POST /auth': 'AuthController.index',
+  'POST /auth/login': 'AuthController.login',
+  'POST /auth/register': 'AuthController.register',
+  'DELETE /auth': 'AuthController.logout',
 
   'GET /jobs': 'JobsController.index',
   'GET /subscriptions/:id/jobs': 'SubscriptionsController.getBySubscription',

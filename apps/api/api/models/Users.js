@@ -57,6 +57,11 @@
       via: 'user',
     },
 
+    roles: {
+      type: 'array',
+      defaultsTo: ['login'],
+    },
+
     // We don't wan't to send back encrypted password either
     toJSON() {
       const obj = this.toObject();

@@ -3,76 +3,6 @@ const assert = require('chai').assert;
 const {seedSubscription} = require('seeders');
 
 describe('UsersController', () => {
-  describe('POST /users', () => {
-    it('should return 422 and valudation errors if fields are not set', () => {
-      return request(sails.hooks.http.app)
-        .post('/users')
-        .send({})
-        .expect(422)
-        .then((res) => {
-          assert.isObject(res.body.validationErrors, 'response contains validationErrors object');
-
-          // firstName validation
-          assert.isArray(res.body.validationErrors.firstName, 'response contains validation errors array for firstName');
-          const failedFirstNameRules = _.pluck(res.body.validationErrors.firstName, 'rule');
-          assert.sameMembers(failedFirstNameRules, ['required'], 'require rule is presented for firstName');
-
-          // lastName validation
-          assert.isArray(res.body.validationErrors.lastName, 'response contains validation errors array for lastName');
-          const failedLastNameRules = _.pluck(res.body.validationErrors.lastName, 'rule');
-          assert.sameMembers(failedLastNameRules, ['required'], 'require rule is presented for lastName');
-
-          // email validation
-          assert.isArray(res.body.validationErrors.email, 'response contains validation errors array for email');
-          const failedEmailRules = _.pluck(res.body.validationErrors.email, 'rule');
-          assert.sameMembers(failedEmailRules, ['email', 'required'], 'email and required rules are presented for email');
-
-          // password validation
-          assert.isArray(res.body.validationErrors.password, 'response contains validation errors array for password');
-          const failedPasswordRules = _.pluck(res.body.validationErrors.password, 'rule');
-          assert.sameMembers(failedPasswordRules, ['minLength', 'required'],
-            'required rules are presented for password');
-        });
-    });
-
-    it('should return 422 if password != confirmPassword', () => {
-      const newUser = {email: 'fake-email-wrong-pass@example.com', password: '123456'};
-      return request(sails.hooks.http.app)
-        .post('/users')
-        .send(_.merge(newUser, {confirmPassword: 'wrong-password'}))
-        .expect(422)
-        .then((res) => {
-          assert.notProperty(res.body.validationErrors, 'password', 'there is no error for password');
-          const failedConfirmPasswordRules = _.pluck(res.body.validationErrors.confirmPassword, 'rule');
-          assert.sameMembers(failedConfirmPasswordRules, ['passwordConfirmed'],
-            'passwordConfirmed rule is presented for confirmPassword');
-        });
-    });
-
-    it('should return 201 and created user if payload is valid', () => {
-      const newUser = {firstName: 'Bilbo', lastName: 'Beggins', email: 'fake-email@example.com', password: '123456'};
-      function checkCreatedUser() {
-        return request(sails.hooks.http.app)
-          .post('/auth')
-          .send(newUser)
-          .expect(200);
-      }
-      return request(sails.hooks.http.app)
-        .post('/users')
-        .send(_.merge(newUser, {confirmPassword: '123456'}))
-        .expect(201)
-        .then((res) => {
-          assert.isString(res.body.token, 'response contains token');
-          assert.isObject(res.body.user, 'response contains user');
-          assert.equal(res.body.user.email, newUser.email, 'user has correct email');
-
-          // make sure that created user can be logged in
-          return checkCreatedUser();
-        });
-    });
-  });
-
-
   describe('GET /users/profile', () => {
     let authHeader = null;
     let defaultUser = null;
@@ -82,7 +12,7 @@ describe('UsersController', () => {
 
       const loginAndSeed = () => {
         return request(sails.hooks.http.app)
-          .post('/auth')
+          .post('/auth/login')
           .send({email: defaultUser.email, password: defaultUser.password})
           .expect(200)
           .then((res) => {

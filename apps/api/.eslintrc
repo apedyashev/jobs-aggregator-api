@@ -14,7 +14,8 @@
     "jwToken": true,
     "_": true,
     "Jobs": true,
-    "Subscriptions": true
+    "Subscriptions": true,
+    "RevokedTokens": true
   },
   "rules": {
     "max-len": "off",

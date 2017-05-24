@@ -82,6 +82,24 @@ module.exports.connections = {
   //   database: 'YOUR_POSTGRES_DB' //optional
   // }
 
+  dockerRedis: {
+    adapter: 'sails-redis',
+    // config: {}
+    port: 6379,
+    host: 'redis',
+    // password: null,
+    // database: null,
+    options: {
+      // low-level configuration
+      // (redis driver options)
+      parser: 'hiredis',
+      return_buffers: false,
+      detect_buffers: false,
+      socket_nodelay: true,
+      no_ready_check: false,
+      enable_offline_queue: true,
+    },
+  },
 
   /***************************************************************************
   *                                                                          *

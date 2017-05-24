@@ -29,9 +29,21 @@ module.exports = function(req, res, next) {
   }
 
   jwToken.verify(token, (err, tokenPayload) => {
-    if (err) return res.json(401, {err: 'Invalid Token!'});
-    req.tokenPayload = tokenPayload; // This is the decrypted token or the payload you provided
-    req.userId = tokenPayload.userId;
-    next();
+    if (err) {
+      return res.json(401, {err: 'Invalid Token!'});
+    }
+
+    RevokedTokens.findOne({token, user: tokenPayload.userId}).then((revokedTokenItem) => {
+      if (revokedTokenItem) {
+        // token has been revoked
+        return res.json(401, {err: 'Invalid Token!'});
+      } else {
+        // token is still valid
+        req.tokenPayload = tokenPayload; // This is the decrypted token or the payload you provided
+        req.userId = tokenPayload.userId;
+        req.token = token;
+        next();
+      }
+    });
   });
 };
