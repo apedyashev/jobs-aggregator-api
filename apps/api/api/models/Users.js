@@ -37,7 +37,7 @@
 
   types: {
     passwordConfirmed(confirmPassword) {
-      return confirmPassword === this.password;
+      return this.password ? (confirmPassword === this.password) : true;
     },
   },
 
@@ -83,8 +83,7 @@
     },
   },
 
-  // Here we encrypt password before creating a User
-  beforeCreate(values, next) {
+  _handlePasswordBeforeSave(values, next) {
     // confirmPassword is used only for validation, we don't want to save it to DB
     delete values.confirmPassword;
 
@@ -102,6 +101,15 @@
         return next();
       });
     });
+  },
+
+  // Here we encrypt password before creating a User
+  beforeCreate(values, next) {
+    this._handlePasswordBeforeSave(values, next);
+  },
+
+  beforeUpdate(values, next) {
+    this._handlePasswordBeforeSave(values, next);
   },
 
   comparePassword(password, user, cb) {

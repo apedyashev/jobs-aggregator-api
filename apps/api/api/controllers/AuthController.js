@@ -129,10 +129,16 @@
    *   UserCreatePayload:
    *     type: object
    *     required:
+   *      - firstName
+   *      - lastName
    *      - email
    *      - password
    *      - confirmPassword
    *     properties:
+   *       firstName:
+   *         type: string
+   *       lastName:
+   *         type: string
    *       email:
    *         type: string
    *       password:

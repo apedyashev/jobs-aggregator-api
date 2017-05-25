@@ -60,6 +60,90 @@ describe('UsersController', () => {
   });
 
 
+  describe('PUT /users/profile', () => {
+    let userToBeUpdated = null;
+    let authHeaderForUpdatedUser = null;
+    before(() => {
+      const password = '123456';
+      return Users.create({
+        firstName: 'oldFirstName',
+        lastName: 'oldLastName',
+        email: `old-email@example.com`,
+        password,
+        confirmPassword: password,
+        roles: ['login'],
+      }).then((user) => {
+        return request(sails.hooks.http.app)
+          .post('/auth/login')
+          .send({email: user.email, password})
+          .expect(200)
+          .then((res) => {
+            authHeaderForUpdatedUser = `Bearer ${res.body.token}`;
+            userToBeUpdated = res.body.user;
+          });
+      });
+    });
+
+    it('should return 401 status code if auth token is incorrect', () => {
+      return request(sails.hooks.http.app)
+        .put('/users/profile')
+        .set('Authorization', 'fake token')
+        .expect(401);
+    });
+
+    it('should return 422 status code if firstName is empty', () => {
+      return request(sails.hooks.http.app)
+        .put('/users/profile')
+        .set('Authorization', authHeaderForUpdatedUser)
+        .send({firstName: ''})
+        .expect(422)
+        .then((res) => {
+          const failedFields = _.keys(res.body.validationErrors);
+          assert.sameMembers(failedFields, ['firstName'], 'all expected fields failed');
+          assert.notProperty(res.body, 'item', 'item is not set');
+
+          const failedFirstNameRules = _.pluck(res.body.validationErrors.firstName, 'rule');
+          assert.sameMembers(failedFirstNameRules, ['required'], 'require rule is presented for title');
+        });
+    });
+
+    it('should return 200 status code if payload is valid', () => {
+      const newPassword = 'updatedpassword';
+      const newUserData = {
+        firstName: 'DefaultUpdated',
+        lastName: 'LastNameUpdated',
+        email: 'new-email@example.com',
+        roles: ['login', 'admin'],
+        password: newPassword,
+        confirmPassword: newPassword,
+      };
+      function checkNewPassword() {
+        return request(sails.hooks.http.app)
+          .post('/auth/login')
+          .send({email: userToBeUpdated.email, password: newPassword})
+          .then((res) => {
+            assert.equal(res.statusCode, 200, 'login with updated password works');
+          });
+      }
+      return request(sails.hooks.http.app)
+        .put('/users/profile')
+        .set('Authorization', authHeaderForUpdatedUser)
+        .send(newUserData)
+        .expect(200)
+        .then((res) => {
+          assert.property(res.body, 'item', 'item not set');
+          assert.equal(res.body.item.firstName, newUserData.firstName, 'firstName was updated');
+          assert.equal(res.body.item.lastName, newUserData.lastName, 'lastName was updated');
+          assert.equal(res.body.item.email, userToBeUpdated.email, 'email was NOT updated');
+          assert.sameMembers(res.body.item.roles, userToBeUpdated.roles, 'roles was NOT updated');
+
+          // check if password has been updated
+          return checkNewPassword();
+        });
+    });
+  });
+
+
   describe('GET /users', () => {
     it('should return 403 status code if auth token belongs to non-admin user', () => {
       return request(sails.hooks.http.app)

@@ -102,4 +102,64 @@ module.exports = {
       res.serverError(err);
     });
   },
+
+  /**
+  * @swagger
+  * /users/profile:
+  *   put:
+  *     summary: Updates (patches) user data
+  *     description: |
+  *       This endpoint works as PATCH, i.e updates only those fields which are presented in the request payload
+  *     tags: [Users]
+  *     produces:
+  *       - application/json
+  *     parameters:
+  *       - $ref: "#/parameters/AuthorizationHeader"
+  *       - name: payload
+  *         description: Endpoint's payload.
+  *         in: body
+  *         required: true
+  *         schema:
+  *           $ref: "#/definitions/UserUpdatePayload"
+  *     responses:
+  *       201:
+  *        description: Created
+  *        schema:
+  *          $ref: "#/definitions/UserResponseOk"
+  *       422:
+  *         description: Validation error
+  *         schema:
+  *           $ref: "#/definitions/ValidationError"
+  *       500:
+  *         description: Server error
+  * definitions:
+  *   UserUpdatePayload:
+  *     type: object
+  *     properties:
+  *       firstName:
+  *         type: string
+  *       lastName:
+  *         type: string
+  *       email:
+  *         type: string
+  *       password:
+  *         type: string
+  *       confirmPassword:
+  *         type: string
+  */
+  updateProfile(req, res) {
+    const {userId} = req.tokenPayload;
+    const updateQuery = _.omit(req.body, 'roles', 'email', 'subscriptions');
+    Users.update({id: userId}, updateQuery).then(([item]) => {
+      if (!item) {
+        return res.notFound(`user ${userId} not found`);
+      }
+      return res.ok({item: item || {}});
+    }).catch((err) => {
+      if (err.Errors) {
+         return res.validationError('User update validation failed', err.Errors);
+      }
+      return res.serverError('User update error', err);
+    });
+  },
 };

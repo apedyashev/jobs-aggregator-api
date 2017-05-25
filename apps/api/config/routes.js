@@ -49,6 +49,8 @@ module.exports.routes = {
   'POST /auth/register': 'AuthController.register',
   'DELETE /auth': 'AuthController.logout',
 
+  'PUT /users/profile': 'UsersController.updateProfile',
+
   'GET /jobs': 'JobsController.index',
   'GET /subscriptions/:id/jobs': 'SubscriptionsController.getBySubscription',
 
@@ -59,7 +61,7 @@ module.exports.routes = {
       const options = {
         swaggerDefinition: {
           info: {
-            title: 'Hello World', // Title (required)
+            title: 'Jobs Aggregator API', // Title (required)
             version: '1.0.0', // Version (required)
           },
         },
