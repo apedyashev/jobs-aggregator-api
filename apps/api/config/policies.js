@@ -29,7 +29,7 @@ module.exports.policies = {
   // '*': true,
   '*': ['isAuthorized'],
   'UsersController': {
-    'create': true, // We dont need authorization here, allowing public access
+    'index': ['isAuthorized', 'isAdmin'],
   },
 
   'AuthController': {

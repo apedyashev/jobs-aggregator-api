@@ -13,7 +13,54 @@
 *   description: Users operations
 */
 module.exports = {
-
+  /**
+  * @swagger
+  * /users:
+  *   get:
+  *     summary: Returs userlst
+  *     description: Available only for users with admin role
+  *     tags: [Users]
+  *     produces:
+  *       - application/json
+  *     parameters:
+  *       - $ref: "#/parameters/AuthorizationHeader"
+  *     responses:
+  *       200:
+  *        description: OK
+  *        schema:
+  *          $ref: "#/definitions/UsersListResponseOk"
+  *       403:
+  *         description: Admin role is required for this endpoint
+  *       500:
+  *         description: Server error
+  * definitions:
+  *   UsersListResponseOk:
+  *     type: object
+  *     properties:
+  *       items:
+  *         type: array
+  *         items:
+  *           $ref: "#/definitions/SerializedUser"
+  *       meta:
+  *         type: object
+  *         schema:
+  *           $ref: "#/definitions/MetaDataObject"
+  */
+  index(req, res) {
+    const page = +req.param('page', 1);
+    const perPage = +req.param('perPage', 50);
+    const sortBy = req.param('sortBy', 'createdAt:DESC');
+    const [sortByField, sortByDirection] = sortBy.split(':');
+    return Users.pagify('items', {
+      sort: [`${sortByField || 'createdAt'} ${sortByDirection || 'DESC'}`],
+      page,
+      perPage,
+    }).then((data) => {
+      res.ok(data);
+    }).catch((err) => {
+      res.serverError('get users list', err);
+    });
+  },
 
   update(req, res) {
   // omit roles array, default role will be assigned by the model

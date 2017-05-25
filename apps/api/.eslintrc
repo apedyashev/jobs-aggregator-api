@@ -15,7 +15,8 @@
     "_": true,
     "Jobs": true,
     "Subscriptions": true,
-    "RevokedTokens": true
+    "RevokedTokens": true,
+    "Users": true
   },
   "rules": {
     "max-len": "off",

@@ -16,9 +16,21 @@
   *       - $ref: '#/definitions/BaseModel'
   *       - required:
   *         - email
+  *         - firstName
+  *         - lastName
   *       - properties:
   *          email:
   *            type: string
+  *          firstName:
+  *            type: string
+  *          lastName:
+  *            type: string
+  *          subscriptions:
+  *            type: array
+  *            items:
+  *              - $ref: '#/definitions/SerializedSubscription'
+  *          roles:
+  *            type: array
   */
  module.exports = {
    schema: true,
