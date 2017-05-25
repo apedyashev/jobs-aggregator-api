@@ -1,4 +1,5 @@
 const request = require('supertest');
+const {endpoints} = require('constants.js');
 
 module.exports = function seedSubscription({authHeader, data}) {
   const newSubscription = data || {
@@ -9,7 +10,7 @@ module.exports = function seedSubscription({authHeader, data}) {
   if (_.isArray(newSubscription)) {
     const promises = newSubscription.map((subscription) => {
       return request(sails.hooks.http.app)
-        .post('/subscriptions')
+        .post(endpoints.subscriptions())
         .set('Authorization', authHeader)
         .send(subscription)
         .expect(201)
@@ -18,7 +19,7 @@ module.exports = function seedSubscription({authHeader, data}) {
     return Promise.all(promises);
   } else {
     return request(sails.hooks.http.app)
-      .post('/subscriptions')
+      .post(endpoints.subscriptions())
       .set('Authorization', authHeader)
       .send(newSubscription)
       .expect(201)

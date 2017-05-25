@@ -1,5 +1,6 @@
 const request = require('supertest');
 const chai = require('chai');
+const {endpoints} = require('constants.js');
 
 module.exports = {
   seedAndLoginAdmin() {
@@ -13,7 +14,7 @@ module.exports = {
     };
     return Users.create(data).then((user) => {
       return request(sails.hooks.http.app)
-        .post('/auth/login')
+        .post(endpoints.login)
         .send({email: data.email, password: data.password})
         .expect(200).then((res) => {
           global.loggedAdmin = res.body.user;
@@ -24,7 +25,7 @@ module.exports = {
 
   loginDefaultUser(defaultUser) {
     return request(sails.hooks.http.app)
-      .post('/auth/login')
+      .post(endpoints.login)
       .send({email: defaultUser.email, password: defaultUser.password})
       .expect(200)
       .then((res) => {

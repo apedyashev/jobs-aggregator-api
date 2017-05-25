@@ -1,6 +1,7 @@
 /* global authHeader */
 const request = require('supertest');
 const assert = require('chai').assert;
+const {endpoints} = require('constants.js');
 
 describe('StatisticsController', () => {
   const expectedCities = [{name: 'city1', count: 2}, {name: 'city2', count: 2}, {name: 'city3', count: 1}];
@@ -23,7 +24,7 @@ describe('StatisticsController', () => {
   describe('GET /statistics', () => {
     it('should return statistics with both cities and availabilities arrays', () => {
       return request(sails.hooks.http.app)
-        .get('/statistics')
+        .get(endpoints.statistics)
         .set('Authorization', authHeader)
         .expect(200)
         .then((res) => {
@@ -37,7 +38,7 @@ describe('StatisticsController', () => {
 
     it('should return 401 if auth header is empty', () => {
       return request(sails.hooks.http.app)
-        .get('/statistics')
+        .get(endpoints.statistics)
         .set('Authorization', '')
         .expect(401);
     });
@@ -47,7 +48,7 @@ describe('StatisticsController', () => {
   describe('GET /statistics/cities', () => {
     it('should return statistics with only cities', () => {
       return request(sails.hooks.http.app)
-        .get('/statistics/cities')
+        .get(endpoints.statisticsCities)
         .set('Authorization', authHeader)
         .expect(200)
         .then((res) => {
@@ -59,7 +60,7 @@ describe('StatisticsController', () => {
 
     it('should return 401 if auth header is empty', () => {
       return request(sails.hooks.http.app)
-        .get('/statistics/cities')
+        .get(endpoints.statisticsCities)
         .set('Authorization', '')
         .expect(401);
     });
@@ -68,7 +69,7 @@ describe('StatisticsController', () => {
   describe('GET /statistics/availabilities', () => {
     it('should return statistics with only availabilities', () => {
       return request(sails.hooks.http.app)
-        .get('/statistics/availabilities')
+        .get(endpoints.statisticsAvailabilities)
         .set('Authorization', authHeader)
         .expect(200)
         .then((res) => {
@@ -81,7 +82,7 @@ describe('StatisticsController', () => {
 
     it('should return 401 if auth header is empty', () => {
       return request(sails.hooks.http.app)
-        .get('/statistics/availabilities')
+        .get(endpoints.statisticsAvailabilities)
         .set('Authorization', '')
         .expect(401);
     });

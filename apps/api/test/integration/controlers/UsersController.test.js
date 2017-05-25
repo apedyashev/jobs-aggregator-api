@@ -3,6 +3,7 @@ const request = require('supertest');
 const assert = require('chai').assert;
 const {seedSubscription, seedRandomUsers} = require('seeders');
 const mocks = require('mocks');
+const {endpoints} = require('constants.js');
 
 describe('UsersController', () => {
   describe('GET /users/profile', () => {
@@ -14,7 +15,7 @@ describe('UsersController', () => {
 
       const loginAndSeed = () => {
         return request(sails.hooks.http.app)
-          .post('/auth/login')
+          .post(endpoints.login)
           .send({email: defaultUser.email, password: defaultUser.password})
           .expect(200)
           .then((res) => {
@@ -38,7 +39,7 @@ describe('UsersController', () => {
 
     it('should return logged user by auth token', () => {
       return request(sails.hooks.http.app)
-        .post('/users/profile')
+        .post(endpoints.usersProfile)
         .set('Authorization', authHeader)
         .expect(200)
         .then((res) => {
@@ -53,7 +54,7 @@ describe('UsersController', () => {
 
     it('should return 401 status code if auth token is incorrect', () => {
       return request(sails.hooks.http.app)
-        .post('/users/profile')
+        .post(endpoints.usersProfile)
         .set('Authorization', 'fake token')
         .expect(401);
     });
@@ -74,7 +75,7 @@ describe('UsersController', () => {
         roles: ['login'],
       }).then((user) => {
         return request(sails.hooks.http.app)
-          .post('/auth/login')
+          .post(endpoints.login)
           .send({email: user.email, password})
           .expect(200)
           .then((res) => {
@@ -86,14 +87,14 @@ describe('UsersController', () => {
 
     it('should return 401 status code if auth token is incorrect', () => {
       return request(sails.hooks.http.app)
-        .put('/users/profile')
+        .put(endpoints.usersProfile)
         .set('Authorization', 'fake token')
         .expect(401);
     });
 
     it('should return 422 status code if firstName is empty', () => {
       return request(sails.hooks.http.app)
-        .put('/users/profile')
+        .put(endpoints.usersProfile)
         .set('Authorization', authHeaderForUpdatedUser)
         .send({firstName: ''})
         .expect(422)
@@ -119,14 +120,14 @@ describe('UsersController', () => {
       };
       function checkNewPassword() {
         return request(sails.hooks.http.app)
-          .post('/auth/login')
+          .post(endpoints.login)
           .send({email: userToBeUpdated.email, password: newPassword})
           .then((res) => {
             assert.equal(res.statusCode, 200, 'login with updated password works');
           });
       }
       return request(sails.hooks.http.app)
-        .put('/users/profile')
+        .put(endpoints.usersProfile)
         .set('Authorization', authHeaderForUpdatedUser)
         .send(newUserData)
         .expect(200)
@@ -147,7 +148,7 @@ describe('UsersController', () => {
   describe('GET /users', () => {
     it('should return 403 status code if auth token belongs to non-admin user', () => {
       return request(sails.hooks.http.app)
-        .get('/users')
+        .get(endpoints.users())
         .set('Authorization', authHeader)
         .expect(403);
     });
@@ -169,7 +170,7 @@ describe('UsersController', () => {
 
       it('should return users list', () => {
         return request(sails.hooks.http.app)
-          .get('/users')
+          .get(endpoints.users())
           .set('Authorization', loggedAdminAuth)
           .expect(200)
           .then((res) => {
@@ -185,7 +186,7 @@ describe('UsersController', () => {
         const expectedUsers = _.sortByOrder([loggedUser, loggedAdmin].concat(seededUsers), ['firstName'], ['desc']);
         const meta = mocks.meta({totalCount: expectedUsers.length});
         return request(sails.hooks.http.app)
-          .get('/users?sortBy=firstName:desc')
+          .get(`${endpoints.users()}?sortBy=firstName:desc`)
           .set('Authorization', loggedAdminAuth)
           .expect(200)
           .expect({meta, items: expectedUsers});
@@ -195,7 +196,7 @@ describe('UsersController', () => {
         const expectedUsers = _.sortByOrder([loggedUser, loggedAdmin].concat(seededUsers), ['firstName'], ['asc']);
         const meta = mocks.meta({totalCount: expectedUsers.length});
         return request(sails.hooks.http.app)
-          .get('/users?sortBy=firstName:asc')
+          .get(`${endpoints.users()}?sortBy=firstName:asc`)
           .set('Authorization', loggedAdminAuth)
           .expect(200)
           .expect({meta, items: expectedUsers});
@@ -214,7 +215,7 @@ describe('UsersController', () => {
           totalPages: Math.ceil(allUsers.length / 5),
         });
         return request(sails.hooks.http.app)
-          .get('/users?sortBy=firstName:asc&page=1&perPage=5')
+          .get(`${endpoints.users()}?sortBy=firstName:asc&page=1&perPage=5`)
           .set('Authorization', loggedAdminAuth)
           .expect(200)
           .expect({meta, items: expectedUsers});
@@ -235,7 +236,7 @@ describe('UsersController', () => {
           totalPages: Math.ceil(allUsers.length / 3),
         });
         return request(sails.hooks.http.app)
-          .get('/users?sortBy=firstName:asc&page=2&perPage=3')
+          .get(`${endpoints.users()}?sortBy=firstName:asc&page=2&perPage=3`)
           .set('Authorization', loggedAdminAuth)
           .expect(200)
           .expect({meta, items: expectedUsers});

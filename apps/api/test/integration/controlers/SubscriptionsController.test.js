@@ -5,12 +5,13 @@ const faker = require('faker');
 const _ = require('lodash');
 const {seedSubscription} = require('seeders');
 const mocks = require('mocks');
+const {endpoints} = require('constants.js');
 
 describe('SubscriptionsController', () => {
   describe('POST /subscriptions', () => {
     it('should return 422 and validation errors if payload is empty', () => {
       return request(sails.hooks.http.app)
-        .post('/subscriptions')
+        .post(endpoints.subscriptions())
         .set('Authorization', authHeader)
         .send({})
         .expect(422)
@@ -28,7 +29,7 @@ describe('SubscriptionsController', () => {
     it('should return 201 and created subscription if only title  is set', () => {
       const newSubscription = {title: 'subscr123'};
       return request(sails.hooks.http.app)
-        .post('/subscriptions')
+        .post(endpoints.subscriptions())
         .set('Authorization', authHeader)
         .send(newSubscription)
         .expect(201)
@@ -42,7 +43,7 @@ describe('SubscriptionsController', () => {
     it('should return 201 and created subscription if payload is valid', () => {
       const newSubscription = {title: 'subscr1', keywords: ['sky', 'blue'], cities: ['victoria', 'male']};
       return request(sails.hooks.http.app)
-        .post('/subscriptions')
+        .post(endpoints.subscriptions())
         .set('Authorization', authHeader)
         .send(newSubscription)
         .expect(201)
@@ -56,7 +57,7 @@ describe('SubscriptionsController', () => {
     it('should return 401 if auth header is empty', () => {
       const newSubscription = {title: 'subscr1', keywords: ['sky', 'blue'], cities: ['victoria', 'male']};
       return request(sails.hooks.http.app)
-        .post('/subscriptions')
+        .post(endpoints.subscriptions())
         .set('Authorization', '')
         .send(newSubscription)
         .expect(401);
@@ -76,7 +77,7 @@ describe('SubscriptionsController', () => {
 
     it('should return 422 and validation errors if fields are empty', () => {
       return request(sails.hooks.http.app)
-        .put(`/subscriptions/${createdSubscription.id}`)
+        .put(endpoints.subscriptions(createdSubscription.id))
         .set('Authorization', authHeader)
         .send({title: '', keywords: null, cities: null})
         .expect(422)
@@ -93,7 +94,7 @@ describe('SubscriptionsController', () => {
 
     it('should return 200 and unchanged object if request contains an empty object', () => {
       return request(sails.hooks.http.app)
-        .put(`/subscriptions/${createdSubscription.id}`)
+        .put(endpoints.subscriptions(createdSubscription.id))
         .set('Authorization', authHeader)
         .send({})
         .expect(200)
@@ -107,7 +108,7 @@ describe('SubscriptionsController', () => {
     it('should return 200 and updated subscription if only title  is set', () => {
       const newSubscription = {title: 'update subscr123'};
       return request(sails.hooks.http.app)
-        .put(`/subscriptions/${createdSubscription.id}`)
+        .put(endpoints.subscriptions(createdSubscription.id))
         .set('Authorization', authHeader)
         .send(newSubscription)
         .expect(200)
@@ -121,7 +122,7 @@ describe('SubscriptionsController', () => {
     it('should return 200 and updated subscription if payload is valid', () => {
       const newSubscription = {title: 'subscr1', keywords: ['sky', 'blue'], cities: ['victoria', 'male']};
       return request(sails.hooks.http.app)
-        .put(`/subscriptions/${createdSubscription.id}`)
+        .put(endpoints.subscriptions(createdSubscription.id))
         .set('Authorization', authHeader)
         .send(newSubscription)
         .expect(200)
@@ -135,7 +136,7 @@ describe('SubscriptionsController', () => {
     it('should not update user', () => {
       const newSubscription = {title: 'subscr1', user: 9999};
       return request(sails.hooks.http.app)
-        .put(`/subscriptions/${createdSubscription.id}`)
+        .put(endpoints.subscriptions(createdSubscription.id))
         .set('Authorization', authHeader)
         .send(newSubscription)
         .expect(200)
@@ -147,7 +148,7 @@ describe('SubscriptionsController', () => {
     it('should return 404 if id is invalid', () => {
       const newSubscription = {title: 'subscr1'};
       return request(sails.hooks.http.app)
-        .put(`/subscriptions/77787`)
+        .put(endpoints.subscriptions(77787))
         .set('Authorization', authHeader)
         .send(newSubscription)
         .expect(404);
@@ -156,7 +157,7 @@ describe('SubscriptionsController', () => {
     it('should return 400 if payload is an array', () => {
       const newSubscription = {title: 'subscr1', keywords: ['sky', 'blue'], cities: ['victoria', 'male']};
       return request(sails.hooks.http.app)
-        .put(`/subscriptions/${createdSubscription.id}`)
+        .put(endpoints.subscriptions(createdSubscription.id))
         .set('Authorization', authHeader)
         .send([newSubscription])
         .expect(400);
@@ -182,7 +183,7 @@ describe('SubscriptionsController', () => {
     it('should return 401 if auth header is empty', () => {
       const newSubscription = {title: 'subscr1', keywords: ['sky', 'blue'], cities: ['victoria', 'male']};
       return request(sails.hooks.http.app)
-        .put(`/subscriptions/${createdSubscription.id}`)
+        .put(endpoints.subscriptions(createdSubscription.id))
         .set('Authorization', '')
         .send(newSubscription)
         .expect(401);
@@ -208,7 +209,7 @@ describe('SubscriptionsController', () => {
 
     it('should return 401 is auth header is not set', () => {
       return request(sails.hooks.http.app)
-        .get('/subscriptions')
+        .get(endpoints.subscriptions())
         .set('Authorization', '')
         .expect(401)
         .expect((res) => {
@@ -219,7 +220,7 @@ describe('SubscriptionsController', () => {
     it('should return the list of the subscriptions sorted by `title`, DESC', () => {
       const meta = mocks.meta({totalCount: subscriptions.length});
       return request(sails.hooks.http.app)
-        .get('/subscriptions?sortBy=title:desc')
+        .get(`${endpoints.subscriptions()}?sortBy=title:desc`)
         .set('Authorization', authHeader)
         .expect(200)
         .expect((res) => {
@@ -232,7 +233,7 @@ describe('SubscriptionsController', () => {
     it('should return the list ordered in DESC order if order direction is missed in the `sortBy` param', () => {
       const meta = mocks.meta({totalCount: subscriptions.length});
       return request(sails.hooks.http.app)
-        .get('/subscriptions?sortBy=title')
+        .get(`${endpoints.subscriptions()}?sortBy=title`)
         .set('Authorization', authHeader)
         .expect(200)
         .expect((res) => {
@@ -250,7 +251,7 @@ describe('SubscriptionsController', () => {
         nextPage: 2,
       });
       return request(sails.hooks.http.app)
-        .get('/subscriptions?page=1&perPage=2&sortBy=title:asc')
+        .get(`${endpoints.subscriptions()}?page=1&perPage=2&sortBy=title:asc`)
         .set('Authorization', authHeader)
         .expect(200)
         .expect((res) => {
@@ -270,7 +271,7 @@ describe('SubscriptionsController', () => {
         perPage: 3,
       });
       return request(sails.hooks.http.app)
-        .get('/subscriptions?page=2&perPage=3&sortBy=title:asc')
+        .get(`${endpoints.subscriptions()}?page=2&perPage=3&sortBy=title:asc`)
         .set('Authorization', authHeader)
         .expect(200)
         .expect((res) => {
@@ -292,7 +293,7 @@ describe('SubscriptionsController', () => {
 
     it('should return 200 and seeded item by id', () => {
       return request(sails.hooks.http.app)
-        .get(`/subscriptions/${currentSubscription.id}`)
+        .get(endpoints.subscriptions(currentSubscription.id))
         .set('Authorization', authHeader)
         .expect(200)
         .then((res) => {
@@ -303,7 +304,7 @@ describe('SubscriptionsController', () => {
 
     it('should return 200 and empty object as the `item` if id is invalid', () => {
       return request(sails.hooks.http.app)
-        .get('/subscriptions/invalid-id')
+        .get(endpoints.subscriptions('invalid-id'))
         .set('Authorization', authHeader)
         .expect(200)
         .then((res) => {
@@ -315,7 +316,7 @@ describe('SubscriptionsController', () => {
 
     it('should return 401 if auth header is empty', () => {
       return request(sails.hooks.http.app)
-        .get(`/subscriptions/${currentSubscription.id}`)
+        .get(endpoints.subscriptions(currentSubscription.id))
         .set('Authorization', '')
         .expect(401);
     });
@@ -336,7 +337,7 @@ describe('SubscriptionsController', () => {
 
     it('should return 204 and removes subscription from db if id is valid', () => {
       return request(sails.hooks.http.app)
-        .del(`/subscriptions/${currentSubscription.id}`)
+        .del(endpoints.subscriptions(currentSubscription.id))
         .set('Authorization', authHeader)
         .expect(204).then(() => {
           Subscriptions.findOne({id: currentSubscription.id}).then((item) => {
@@ -347,14 +348,14 @@ describe('SubscriptionsController', () => {
 
     it('should return 404 if id is invalid', () => {
       return request(sails.hooks.http.app)
-        .del(`/subscriptions/56988786`)
+        .del(endpoints.subscriptions('56988786'))
         .set('Authorization', authHeader)
         .expect(404);
     });
 
     it('should return 401 if auth header is empty', () => {
       return request(sails.hooks.http.app)
-        .del(`/subscriptions/${currentSubscription.id}`)
+        .del(endpoints.subscriptions(currentSubscription.id))
         .set('Authorization', '')
         .expect(401);
     });
@@ -396,7 +397,7 @@ describe('SubscriptionsController', () => {
 
       return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
         return request(sails.hooks.http.app)
-          .get(`/subscriptions/${subscription.id}/jobs`)
+          .get(endpoints.subscriptionJobs(subscription.id))
           .set('Authorization', authHeader)
           .expect(200)
           .then((res) => {
@@ -413,7 +414,7 @@ describe('SubscriptionsController', () => {
 
       return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
         return request(sails.hooks.http.app)
-          .get(`/subscriptions/${subscription.id}/jobs`)
+          .get(endpoints.subscriptionJobs(subscription.id))
           .set('Authorization', authHeader)
           .expect(200)
           .then((res) => {
@@ -431,7 +432,7 @@ describe('SubscriptionsController', () => {
 
       return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
         return request(sails.hooks.http.app)
-          .get(`/subscriptions/${subscription.id}/jobs?page=1&perPage=1&sortBy=title:ASC`)
+          .get(`${endpoints.subscriptionJobs(subscription.id)}?page=1&perPage=1&sortBy=title:ASC`)
           .set('Authorization', authHeader)
           .expect(200)
           .then((res) => {
@@ -453,7 +454,7 @@ describe('SubscriptionsController', () => {
 
       return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
         return request(sails.hooks.http.app)
-          .get(`/subscriptions/${subscription.id}/jobs?page=1&perPage=2&sortBy=title:ASC`)
+          .get(`${endpoints.subscriptionJobs(subscription.id)}?page=1&perPage=2&sortBy=title:ASC`)
           .set('Authorization', authHeader)
           .expect(200)
           .then((res) => {
@@ -475,7 +476,7 @@ describe('SubscriptionsController', () => {
 
       return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
         return request(sails.hooks.http.app)
-          .get(`/subscriptions/${subscription.id}/jobs?page=1&perPage=2&sortBy=title:DESC`)
+          .get(`${endpoints.subscriptionJobs(subscription.id)}?page=1&perPage=2&sortBy=title:DESC`)
           .set('Authorization', authHeader)
           .expect(200)
           .then((res) => {
@@ -497,7 +498,7 @@ describe('SubscriptionsController', () => {
 
       return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
         return request(sails.hooks.http.app)
-          .get(`/subscriptions/${subscription.id}/jobs?page=2&perPage=2&sortBy=title:ASC`)
+          .get(`${endpoints.subscriptionJobs(subscription.id)}?page=2&perPage=2&sortBy=title:ASC`)
           .set('Authorization', authHeader)
           .expect(200)
           .then((res) => {
@@ -519,7 +520,7 @@ describe('SubscriptionsController', () => {
       const newSubscription = {title: 'by a keyword', keywords: [keywords[3]]};
       return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
         return request(sails.hooks.http.app)
-          .get(`/subscriptions/${subscription.id}/jobs`)
+          .get(endpoints.subscriptionJobs(subscription.id))
           .set('Authorization', authHeader)
           .expect(200)
           .then((res) => {
@@ -536,7 +537,7 @@ describe('SubscriptionsController', () => {
 
       return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
         return request(sails.hooks.http.app)
-          .get(`/subscriptions/${subscription.id}/jobs`)
+          .get(endpoints.subscriptionJobs(subscription.id))
           .set('Authorization', authHeader)
           .expect(200)
           .then((res) => {
@@ -553,7 +554,7 @@ describe('SubscriptionsController', () => {
 
       return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
         return request(sails.hooks.http.app)
-          .get(`/subscriptions/${subscription.id}/jobs`)
+          .get(endpoints.subscriptionJobs(subscription.id))
           .set('Authorization', authHeader)
           .expect(200)
           .then((res) => {
@@ -570,7 +571,7 @@ describe('SubscriptionsController', () => {
 
       return seedSubscription({authHeader, data: newSubscription}).then((subscription) => {
         return request(sails.hooks.http.app)
-          .get(`/subscriptions/${subscription.id}/jobs`)
+          .get(endpoints.subscriptionJobs(subscription.id))
           .set('Authorization', authHeader)
           .expect(200)
           .then((res) => {
@@ -585,7 +586,7 @@ describe('SubscriptionsController', () => {
     it('should return 401 if auth header is empty', () => {
       return seedSubscription({authHeader}).then((subscription) => {
         return request(sails.hooks.http.app)
-          .get(`/subscriptions/${subscription.id}/jobs`)
+          .get(endpoints.subscriptionJobs(subscription.id))
           .set('Authorization', '')
           .expect(401);
       });

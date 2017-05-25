@@ -1,12 +1,13 @@
 const request = require('supertest');
 const assert = require('chai').assert;
+const {endpoints} = require('constants.js');
 
 describe('AuthController', () => {
   describe('POST /auth/login', () => {
     it('should login the default user', (done) => {
       const [defaultUser] = sails.config.seeds.users;
       request(sails.hooks.http.app)
-        .post('/auth/login')
+        .post(endpoints.login)
         .send({email: defaultUser.email, password: defaultUser.password})
         .expect(200)
         .expect((res) => {
@@ -20,7 +21,7 @@ describe('AuthController', () => {
     it('should return 401 Unautorized if email is empty', (done) => {
       const [defaultUser] = sails.config.seeds.users;
       request(sails.hooks.http.app)
-        .post('/auth/login')
+        .post(endpoints.login)
         .send({email: '', password: defaultUser.password})
         .expect(401)
         .end(done);
@@ -29,7 +30,7 @@ describe('AuthController', () => {
     it('should return 401 Unautorized if password is empty', (done) => {
       const [defaultUser] = sails.config.seeds.users;
       request(sails.hooks.http.app)
-        .post('/auth/login')
+        .post(endpoints.login)
         .send({email: defaultUser.email, password: ''})
         .expect(401)
         .end(done);
@@ -38,7 +39,7 @@ describe('AuthController', () => {
     it('should return 401 Unautorized if email is incorrect', (done) => {
       const [defaultUser] = sails.config.seeds.users;
       request(sails.hooks.http.app)
-        .post('/auth/login')
+        .post(endpoints.login)
         .send({email: `fake-${defaultUser.email}`, password: defaultUser.password})
         .expect(401)
         .end(done);
@@ -47,7 +48,7 @@ describe('AuthController', () => {
     it('should return 401 Unautorized if password is incorrect', (done) => {
       const [defaultUser] = sails.config.seeds.users;
       request(sails.hooks.http.app)
-        .post('/auth/login')
+        .post(endpoints.login)
         .send({email: defaultUser.email, password: `fake-${defaultUser.password}`})
         .expect(401)
         .end(done);
@@ -58,7 +59,7 @@ describe('AuthController', () => {
   describe('POST /auth/register', () => {
     it('should return 422 and valudation errors if fields are not set', () => {
       return request(sails.hooks.http.app)
-        .post('/auth/register')
+        .post(endpoints.register)
         .send({})
         .expect(422)
         .then((res) => {
@@ -90,7 +91,7 @@ describe('AuthController', () => {
     it('should return 422 if password != confirmPassword', () => {
       const newUser = {email: 'fake-email-wrong-pass@example.com', password: '123456'};
       return request(sails.hooks.http.app)
-        .post('/auth/register')
+        .post(endpoints.register)
         .send(_.merge(newUser, {confirmPassword: 'wrong-password'}))
         .expect(422)
         .then((res) => {
@@ -112,7 +113,7 @@ describe('AuthController', () => {
       };
 
       return request(sails.hooks.http.app)
-        .post('/auth/register')
+        .post(endpoints.register)
         .send(newUser)
         .expect(422)
         .then((res) => {
@@ -126,12 +127,12 @@ describe('AuthController', () => {
       const newUser = {firstName: 'Bilbo', lastName: 'Beggins', email: 'fake-email@example.com', password: '123456'};
       function checkCreatedUser() {
         return request(sails.hooks.http.app)
-          .post('/auth/login')
+          .post(endpoints.login)
           .send(newUser)
           .expect(200);
       }
       return request(sails.hooks.http.app)
-        .post('/auth/register')
+        .post(endpoints.register)
         .send(_.merge(newUser, {confirmPassword: '123456'}))
         .expect(201)
         .then((res) => {
@@ -164,7 +165,7 @@ describe('AuthController', () => {
       };
 
       return request(sails.hooks.http.app)
-        .post('/auth/register')
+        .post(endpoints.register)
         .send(_.merge(currentUser, {confirmPassword: '123456'}))
         .expect(201)
         .then((res) => {
@@ -178,7 +179,7 @@ describe('AuthController', () => {
     // logout and make sure that token cannot be used any more
     it('should revoke token and return 204', () => {
       return request(sails.hooks.http.app)
-        .del('/auth')
+        .del(endpoints.auth)
         .set('Authorization', currentAuthHeader)
         .expect(204)
         .then((res) => {
@@ -189,7 +190,7 @@ describe('AuthController', () => {
 
     it('should return 401 if auth header is empty', () => {
       return request(sails.hooks.http.app)
-        .del('/auth')
+        .del(endpoints.auth)
         .set('Authorization', '')
         .expect(401);
     });

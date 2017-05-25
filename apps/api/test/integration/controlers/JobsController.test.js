@@ -1,5 +1,6 @@
 const request = require('supertest');
 const assert = require('chai').assert;
+const {endpoints} = require('constants.js');
 
 describe('JobsController', () => {
   describe('GET /jobs', () => {
@@ -21,7 +22,7 @@ describe('JobsController', () => {
 
     it('should return the list of the jobs without authentication', () => {
       return request(sails.hooks.http.app)
-        .get('/jobs?sortBy=title:asc')
+        .get(`${endpoints.jobs}?sortBy=title:asc`)
         .expect(200)
         .expect((res) => {
           assert.isArray(res.body.items, 'items property exists');
@@ -33,7 +34,7 @@ describe('JobsController', () => {
 
     it('should return the list of the jobs sorted by `title`, DESC', () => {
       return request(sails.hooks.http.app)
-        .get('/jobs?sortBy=title:desc')
+        .get(`${endpoints.jobs}?sortBy=title:desc`)
         .expect(200)
         .expect((res) => {
           // do not check job's id, createdAt etc. `title` checking is enought
@@ -44,7 +45,7 @@ describe('JobsController', () => {
 
     it('should return the list ordered in DESC order if order direction is missed in the `sortBy` param', () => {
       return request(sails.hooks.http.app)
-        .get('/jobs?sortBy=title')
+        .get(`${endpoints.jobs}?sortBy=title`)
         .expect(200)
         .expect((res) => {
           // do not check job's id, createdAt etc. `title` checking is enought
@@ -59,7 +60,7 @@ describe('JobsController', () => {
       expectedMeta.paginate.totalPages = 3;
       expectedMeta.paginate.nextPage = 2;
       return request(sails.hooks.http.app)
-        .get('/jobs?page=1&perPage=2&sortBy=title:asc')
+        .get(`${endpoints.jobs}?page=1&perPage=2&sortBy=title:asc`)
         .expect(200)
         .expect((res) => {
           // do not check job's id, createdAt etc. `title` checking is enought
@@ -78,7 +79,7 @@ describe('JobsController', () => {
         perPage: 3,
       }});
       return request(sails.hooks.http.app)
-        .get('/jobs?page=2&perPage=3&sortBy=title:asc')
+        .get(`${endpoints.jobs}?page=2&perPage=3&sortBy=title:asc`)
         .expect(200)
         .expect((res) => {
           // do not check job's id, createdAt etc. `title` checking is enought
