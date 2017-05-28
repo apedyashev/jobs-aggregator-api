@@ -3,7 +3,7 @@
  *
  * Usage:
  * return res.serverError();
- * return res.serverError(err);
+ * return res.serverError('a message', err);
  *
  * NOTE:
  * If something throws in a policy or controller, or an internal
@@ -26,7 +26,7 @@ module.exports = function serverError(message = '', error = {}) {
   let repsonseData;
   if (sails.config.environment !== 'production') {
     repsonseData = {
-      debug: {message, error}
+      debug: {message, error},
     };
   }
 

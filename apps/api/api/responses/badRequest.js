@@ -3,7 +3,7 @@
  *
  * Usage:
  * return res.badRequest();
- * return res.badRequest(data);
+ * return res.badRequest('message', err);
  */
 
 module.exports = function badRequest(message = '', error = {}) {
@@ -20,7 +20,7 @@ module.exports = function badRequest(message = '', error = {}) {
   let repsonseData;
   if (sails.config.environment !== 'production') {
     repsonseData = {
-      debug: {message, error}
+      debug: {message, error},
     };
   }
 

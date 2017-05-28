@@ -53,7 +53,7 @@ describe('requests/notFound', () => {
     assert.equal(verbose.getCall(0).args[0], 'Sending 404 ("Not Found") response: \n',
       'verbose is called with a description');
     assert.equal(verbose.getCall(0).args[1], 'message', 'verbose is called with `message`');
-    assert.equal(verbose.getCall(0).args[2], 'error', 'verbose is called with `error`');;
+    assert.equal(verbose.getCall(0).args[2], 'error', 'verbose is called with `error`');
 
     assert.isTrue(jsonx.calledOnce, 'called res.jsonx once');
     assert.isTrue(jsonx.calledWith({debug: {message: 'message', error: 'error'}}), 'jsonx is called with `debug`');

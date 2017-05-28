@@ -3,7 +3,7 @@
  *
  * Usage:
  * return res.notFound();
- * return res.notFound(err);
+ * return res.notFound('message', err);
  *
  * e.g.:
  * ```
@@ -30,7 +30,7 @@ module.exports = function notFound(message = '', error = {}) {
   let repsonseData;
   if (sails.config.environment !== 'production') {
     repsonseData = {
-      debug: {message, error}
+      debug: {message, error},
     };
   }
 

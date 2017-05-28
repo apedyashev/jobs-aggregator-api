@@ -3,7 +3,7 @@
  *
  * Usage:
  * return res.forbidden();
- * return res.forbidden(err);
+ * return res.forbidden('a message', err);
  *
  * e.g.:
  * ```
@@ -25,7 +25,7 @@ module.exports = function forbidden(message = '', error = {}) {
   let repsonseData;
   if (sails.config.environment !== 'production') {
     repsonseData = {
-      debug: {message, error}
+      debug: {message, error},
     };
   }
 

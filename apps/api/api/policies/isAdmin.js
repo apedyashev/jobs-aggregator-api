@@ -10,7 +10,7 @@ module.exports = function(req, res, next) {
     if (user && user.roles && user.roles.indexOf('admin') >= 0) {
       next();
     } else {
-      res.forbidden();
+      res.forbidden('not admin');
     }
   }).catch((err) => {
     next(err);

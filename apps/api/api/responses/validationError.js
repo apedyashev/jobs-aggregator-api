@@ -2,8 +2,7 @@
  * 422 (Unprocessable Entity) Handler
  *
  * Usage:
- * return res.validationError();
- * return res.validationError(err);
+ * return res.validationError('message', err);
  *
  */
 
@@ -20,6 +19,6 @@ module.exports = function validationError(message = '', validationErrors = {}) {
 
   return res.jsonx({
     message,
-    validationErrors
+    validationErrors,
   });
 };

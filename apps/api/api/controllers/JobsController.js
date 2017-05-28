@@ -55,7 +55,7 @@ module.exports = {
     }).then((data) => {
       res.ok(data);
     }).catch((err) => {
-      res.serverError(err);
+      res.serverError('get jobs list error', err);
     });
   },
 };

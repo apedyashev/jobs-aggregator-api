@@ -6,7 +6,7 @@
  * return res.created(data);
  */
 
-module.exports = function created(data, options) {
+module.exports = function created(data) {
   // Get access to `req`, `res`, & `sails`
   const req = this.req;
   const res = this.res;

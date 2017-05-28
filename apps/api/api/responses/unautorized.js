@@ -25,7 +25,7 @@ module.exports = function unautorized(message = '', error = {}) {
   let repsonseData;
   if (sails.config.environment !== 'production') {
     repsonseData = {
-      debug: {message, error}
+      debug: {message, error},
     };
   }
 

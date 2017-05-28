@@ -99,7 +99,7 @@ module.exports = {
     Users.findOne({id: userId}).populate('subscriptions').then((item) => {
       item ? res.ok({item}) : res.notFound('user not found');
     }).catch((err) => {
-      res.serverError(err);
+      res.serverError('get user profile error', err);
     });
   },
 

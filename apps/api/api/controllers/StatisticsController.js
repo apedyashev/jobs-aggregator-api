@@ -53,7 +53,7 @@ module.exports = {
     this._getStats().then((results) => {
       res.ok(results);
     }).catch((err) => {
-      res.serverError(err);
+      res.serverError('get statistics error', err);
     });
   },
 
@@ -87,7 +87,7 @@ module.exports = {
     this._getStats(['city']).then((results) => {
       res.ok(results);
     }).catch((err) => {
-      res.serverError(err);
+      res.serverError('get statistics/cities error', err);
     });
   },
 
@@ -121,7 +121,7 @@ module.exports = {
     this._getStats(['availability']).then((results) => {
       res.ok(results);
     }).catch((err) => {
-      res.serverError(err);
+      res.serverError('get statistics/availabilities error', err);
     });
   },
 
