@@ -15,10 +15,7 @@ module.exports = function noContent() {
   // Set status code
   res.status(204);
 
-  sails.log.verbose('Sending 204 ("No Content") response: \n');
+  sails.log.silly('Sending 204 ("No Content") response');
 
-
-  if (req.wantsJSON || sails.config.hooks.views === false) {
-    return res.jsonx();
-  }
+  return res.jsonx();
 };

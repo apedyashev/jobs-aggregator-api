@@ -2,6 +2,8 @@ const sails = require('sails');
 const chai = require('chai');
 chai.use(require('chai-properties'));
 const {loginDefaultUser, seedAndLoginAdmin} = require('seeders');
+const path = require('path');
+global.APP_ROOT = path.resolve(`${__dirname}/..`);
 
 before(function(done) {
   // Increase the Mocha timeout so that Sails has enough time to lift.

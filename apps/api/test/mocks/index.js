@@ -1,4 +1,6 @@
+const responseContext = require('./responseContext.js');
 module.exports = {
+  responseContext,
   meta(newPaginateProps) {
     const paginate = {
       currentPage: 1,
