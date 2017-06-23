@@ -1,3 +1,0 @@
-[submodule "apps/scrapper"]
-	path = apps/scrapper
-	url = git@github.com:apedyashev/jobs-aggregator-scrapper.git
