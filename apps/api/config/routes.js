@@ -49,31 +49,39 @@ module.exports.routes = {
   'POST /auth/register': 'AuthController.register',
   'DELETE /auth': 'AuthController.logout',
 
+  'GET /users': 'UsersController.index',
+  'GET /users/profile': 'UsersController.profile',
   'PUT /users/profile': 'UsersController.updateProfile',
 
   'GET /jobs': 'JobsController.index',
+
   'GET /subscriptions/:id/jobs': 'SubscriptionsController.getBySubscription',
+  'POST /subscriptions': 'SubscriptionsController.create',
+  'GET /subscriptions': 'SubscriptionsController.find',
+  'GET /subscriptions/:id': 'SubscriptionsController.findOne',
+  'PUT /subscriptions/:id': 'SubscriptionsController.update',
+  'DELETE /subscriptions/:id': 'SubscriptionsController.destroy',
+
+  'GET /statistics': 'StatisticsController.index',
+  'GET /statistics/cities': 'StatisticsController.cities',
+  'GET /statistics/availabilities': 'StatisticsController.availabilities',
 
   'GET /swagger/docs/api.json': (req, res) => {
-    if (sails.config.environment !== 'production') {
-      const swaggerJSDoc = require('swagger-jsdoc');
+    const swaggerJSDoc = require('swagger-jsdoc');
 
-      const options = {
-        swaggerDefinition: {
-          info: {
-            title: 'Jobs Aggregator API', // Title (required)
-            version: '1.0.0', // Version (required)
-          },
+    const options = {
+      swaggerDefinition: {
+        info: {
+          title: 'Jobs Aggregator API', // Title (required)
+          version: '1.0.0', // Version (required)
         },
-        apis: ['./api/**/*.js', './api/**/*.jsdoc'], // Path to the API docs
-      };
+      },
+      apis: ['./api/**/*.js', './api/**/*.jsdoc'], // Path to the API docs
+    };
 
-      // Initialize swagger-jsdoc -> returns validated swagger spec in json format
-      const swaggerSpec = swaggerJSDoc(options);
-      res.json(200, swaggerSpec);
-    } else {
-      res.notFound();
-    }
+    // Initialize swagger-jsdoc -> returns validated swagger spec in json format
+    const swaggerSpec = swaggerJSDoc(options);
+    res.json(200, swaggerSpec);
   },
 
 };

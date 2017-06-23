@@ -39,7 +39,7 @@ describe('UsersController', () => {
 
     it('should return logged user by auth token', () => {
       return request(sails.hooks.http.app)
-        .post(endpoints.usersProfile)
+        .get(endpoints.usersProfile)
         .set('Authorization', authHeader)
         .expect(200)
         .then((res) => {
@@ -54,7 +54,7 @@ describe('UsersController', () => {
 
     it('should return 401 status code if auth token is incorrect', () => {
       return request(sails.hooks.http.app)
-        .post(endpoints.usersProfile)
+        .get(endpoints.usersProfile)
         .set('Authorization', 'fake token')
         .expect(401);
     });
