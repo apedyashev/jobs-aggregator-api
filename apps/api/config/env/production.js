@@ -35,4 +35,7 @@ module.exports = {
   //   level: "silent"
   // }
 
+  models: {
+    connection: 'prodMongo',
+  },
 };

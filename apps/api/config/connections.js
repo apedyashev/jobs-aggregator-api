@@ -65,6 +65,15 @@ module.exports.connections = {
     database: 'jobs-aggregator',
   },
 
+  prodMongo: {
+    adapter: 'sails-mongo',
+    host: 'localhost',
+    port: 27017,
+    // user: 'username', //optional
+    // password: 'password', //optional
+    database: 'jobs-aggregator',
+  },
+
   /***************************************************************************
   *                                                                          *
   * PostgreSQL is another officially supported relational database.          *
