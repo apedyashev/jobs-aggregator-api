@@ -41,6 +41,7 @@
     "grunt": "1.0.1",
     "husky": "0.13.3",
     "mocha": "3.3.0",
+    "sinon": "2.3.5",
     "supertest": "3.0.0",
     "swagger-jsdoc": "1.9.4",
     "swagger-ui": "2.2.10"
