@@ -97,28 +97,6 @@
      }).catch((err) => {
        return res.serverError('Server error', err);
      });
-
-    //  Users.findOne({email}, (err, user) => {
-    //    if (!user) {
-    //      return res.unautorized('invalid email or password');
-    //    }
-     //
-    //    Users.comparePassword(password, user, (err, valid) => {
-    //      console.log('err', err);
-    //      if (err) {
-    //        return res.forbidden('forbidden', err);
-    //      }
-     //
-    //      if (!valid) {
-    //        return res.unautorized('invalid email or password');
-    //      } else {
-    //        res.json({
-    //          user,
-    //          token: jwToken.issue({userId: user.id}),
-    //        });
-    //      }
-    //    });
-    //  });
    },
 
    /**
@@ -170,7 +148,7 @@
    *         type: string
    */
    register(req, res) {
-     // omit roles array, default role will be assigned by the model
+     // omit roles array, default role will be assigned by the model.
      const userData = _.omit(req.body, 'roles');
      Users.create(userData).exec((err, user) => {
        if (err) {
@@ -183,7 +161,11 @@
        // If user created successfuly we return user and token as response
        if (user) {
          const token = jwToken.issue({userId: user.id});
-         res.created({user, token});
+         Users.findOne({id: user.id}).populate('subscriptions').then((user) => {
+           res.created({user, token});
+         }).catch((err) => {
+           res.serverError('Server error', err);
+         });
        } else {
          // have no idea how this can happen but we should send a response if it did
          res.serverError('user was not created');
