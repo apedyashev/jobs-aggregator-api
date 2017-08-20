@@ -75,13 +75,12 @@
        return res.unautorized('email and password required');
      }
 
-     Users.findOne({email}, (err, user) => {
+     Users.findOne({email}).populate('subscriptions').then((user) => {
        if (!user) {
          return res.unautorized('invalid email or password');
        }
 
        Users.comparePassword(password, user, (err, valid) => {
-         console.log('err', err);
          if (err) {
            return res.forbidden('forbidden', err);
          }
@@ -95,7 +94,31 @@
            });
          }
        });
+     }).catch((err) => {
+       return res.serverError('Server error', err);
      });
+
+    //  Users.findOne({email}, (err, user) => {
+    //    if (!user) {
+    //      return res.unautorized('invalid email or password');
+    //    }
+     //
+    //    Users.comparePassword(password, user, (err, valid) => {
+    //      console.log('err', err);
+    //      if (err) {
+    //        return res.forbidden('forbidden', err);
+    //      }
+     //
+    //      if (!valid) {
+    //        return res.unautorized('invalid email or password');
+    //      } else {
+    //        res.json({
+    //          user,
+    //          token: jwToken.issue({userId: user.id}),
+    //        });
+    //      }
+    //    });
+    //  });
    },
 
    /**
